@@ -51,11 +51,10 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      */
     public EquazioneSecondoGradoModificabileConRisolutore(double a, double b,
             double c) {
-        // TODO implementare (FATTO)
+        // TODO implementare 
 
         if (Math.abs(a) < EPSILON) // controllo se uguale a zero
-            throw new IllegalArgumentException("L'equazione di secondo grado"
-                    + " non può avere coefficiente a uguale a zero");
+            throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente a uguale a zero");
         this.a = a;
         this.b = b;
         this.c = c;
@@ -79,9 +78,11 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *                                      se il nuovo valore è zero
      */
     public void setA(double a) {
-        // TODO implementare (FATTO)
+        // TODO implementare
 
         this.a = a;
+
+        if(a == 0) throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente = 0!");
         solved = false;
     }
 
@@ -100,7 +101,7 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *              il nuovo valore del parametro b
      */
     public void setB(double b) {
-        // TODO implementare (FATTO)
+        // TODO implementare 
 
         this.b = b;
         solved = false;
@@ -121,7 +122,7 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *              il nuovo valore del parametro c
      */
     public void setC(double c) {
-        // TODO implementare (FATTO)
+        // TODO implementare 
 
         this.c = c;
         this.solved = false;
@@ -144,25 +145,27 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
     public void solve() {
         // TODO implementare
 
-        double delta = b * b - 4 * a * c;
-        // delta == 0
-        if (Math.abs(delta) < EPSILON)
-            // ritorna la soluzione con due valori coincidenti
-            lastSolution =  new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c), (-b) / (2 * a));
-        // delta < 0
-        else if (delta < 0)
-            // ritorna la soluzione vuota
-            lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c));
-        // delta > 0
-        else {
-            double tmp = Math.sqrt(delta);
-            // ritorna le due soluzioni calcolate
-            lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c),
-                    (-b + tmp) / (2 * a),
-                    (-b - tmp) / (2 * a));   
-        }
+        if(!solved) {
+            double delta = b * b - 4 * a * c;
+            // delta == 0
+            if (Math.abs(delta) < EPSILON)
+                // ritorna la soluzione con due valori coincidenti
+                lastSolution =  new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c), (-b) / (2 * a));
+            // delta < 0
+            else if (delta < 0)
+                // ritorna la soluzione vuota
+                lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c));
+            // delta > 0
+            else {
+                double tmp = Math.sqrt(delta);
+                // ritorna le due soluzioni calcolate
+                lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c),
+                        (-b + tmp) / (2 * a),
+                        (-b - tmp) / (2 * a));   
+            }
 
-        solved = true;
+            solved = true;
+        }
     }
 
     /**

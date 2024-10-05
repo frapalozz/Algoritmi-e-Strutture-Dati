@@ -36,7 +36,7 @@ public class EquazioniModificabiliTextualFrontEnd {
                 try {
                     String aInput = input.readLine();
                     a = Double.parseDouble(aInput);
-                    /* Questa riga viene eseguita se a è un numero, successivamente c'è il controllo se a è != 0, quindi riesco ad uscire dal loop retry */
+                    /* Questa riga viene eseguita se a è un numero, successivamente c'è il controllo se a è diverso da 0, quindi riesco ad uscire dal loop retry */
                     retry = false;
                     // controllo se il valore inserito è zero
                     if (Math.abs(a) < EPSILON) {

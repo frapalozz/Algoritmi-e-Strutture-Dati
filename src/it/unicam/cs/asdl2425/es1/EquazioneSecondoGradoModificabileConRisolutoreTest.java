@@ -62,6 +62,11 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
          */
         assertTrue(Math.abs(e1.getA() - x)<EPSILON);
         assertFalse(e1.isSolved());
+
+        /*
+         * Controllo che viene lanciata l'eccezione se imposto a = 0
+         */
+        assertThrows(IllegalArgumentException.class, () -> e1.setA(0));
     }
 
     @Test
