@@ -131,6 +131,10 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
         e1.solve();
         // Controllo che l'equazione è stata risolta dopo aver chiamato il metodo solve();
         assertTrue(e1.isSolved());
+
+        // Cambio c e controllo che l'equazione non è risolta
+        e1.setC(5);
+        assertFalse(e1.isSolved());
     }
 
     @Test

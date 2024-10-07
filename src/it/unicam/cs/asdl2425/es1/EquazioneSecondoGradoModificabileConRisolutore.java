@@ -55,10 +55,13 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
 
         if (Math.abs(a) < EPSILON) // controllo se uguale a zero
             throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente a uguale a zero");
+
         this.a = a;
         this.b = b;
         this.c = c;
+
         solved = false;
+        this.lastSolution = null;
     }
 
     /**
@@ -80,10 +83,11 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
     public void setA(double a) {
         // TODO implementare
 
+        if(Math.abs(a) < EPSILON) throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente = 0!");
+
         this.a = a;
 
-        if(a == 0) throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente = 0!");
-        solved = false;
+        this.solved = false;
     }
 
     /**
@@ -104,7 +108,7 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
         // TODO implementare 
 
         this.b = b;
-        solved = false;
+        this.solved = false;
     }
 
     /**
@@ -150,21 +154,21 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
             // delta == 0
             if (Math.abs(delta) < EPSILON)
                 // ritorna la soluzione con due valori coincidenti
-                lastSolution =  new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c), (-b) / (2 * a));
+                lastSolution =  new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(this.a, this.b, this.c), (-this.b) / (2 * this.a));
             // delta < 0
             else if (delta < 0)
                 // ritorna la soluzione vuota
-                lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c));
+                lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(this.a, this.b, this.c));
             // delta > 0
             else {
                 double tmp = Math.sqrt(delta);
                 // ritorna le due soluzioni calcolate
                 lastSolution = new SoluzioneEquazioneSecondoGrado(new EquazioneSecondoGrado(a, b, c),
-                        (-b + tmp) / (2 * a),
-                        (-b - tmp) / (2 * a));   
+                        (-this.b + tmp) / (2 * this.a),
+                        (-this.b - tmp) / (2 * this.a));   
             }
 
-            solved = true;
+            this.solved = true;
         }
     }
 
@@ -182,8 +186,8 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
     public SoluzioneEquazioneSecondoGrado getSolution() {
         // TODO implementare
 
-        if(solved) {
-            return lastSolution;
+        if(this.solved) {
+            return this.lastSolution;
         }
         
         throw new IllegalStateException("L'equazione non è ancora stata risolta!");
