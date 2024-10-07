@@ -78,7 +78,7 @@ public class EquazioniModificabiliTextualFrontEnd {
                 try {
                     String aInput = input.readLine();
                     c = Double.parseDouble(aInput);
-                    /* Stessa cosa che ho fatto per b, riga eseguita se c è un numero quindi riesco ad uscire dal loop try */
+                    /* Stessa cosa che ho fatto per b, riga eseguita se c è un numero quindi riesco ad uscire dal loop retry */
                     retry = false;
                 } catch (IOException e) {
                     System.err.println("Errore di Input/Output!");
