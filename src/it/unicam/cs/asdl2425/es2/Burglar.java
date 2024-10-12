@@ -46,11 +46,11 @@ public class Burglar {
             combinationLock.open();
             if(combinationLock.isOpen()) return combination;
             
-            // Controllo se la terza terza posizione non superi Z
+            // Controllo se la terza 3° posizione non superi Z
             if(combination.charAt(2) == 'Z') {
-                // Controllo se la seconda posizione non superi Z
+                // Controllo se la 2° posizione non superi Z
                 if(combination.charAt(1)  == 'Z') {
-                    // Controllo se la terza posizione non superi Z
+                    // Controllo se la 1° posizione non superi Z
                     if(combination.charAt(0)  == 'Z') return null;
                     else combination = "" + (char) (combination.charAt(0) + 1) + "AA";
                 }
