@@ -11,6 +11,10 @@ public class Burglar {
 
     // TODO inserire le variabili istanza che servono
 
+    private CombinationLock combinationLock;
+
+    private int attemps;
+
     /**
      * Costruisce uno scassinatore per una certa cassaforte.
      * 
@@ -19,6 +23,10 @@ public class Burglar {
      */
     public Burglar(CombinationLock aCombinationLock) {
         // TODO implementare
+        if(aCombinationLock == null) 
+            throw new NullPointerException("La cassaforte passata è nulla!");
+
+        this.combinationLock = aCombinationLock;
     }
 
     /**
@@ -28,7 +36,26 @@ public class Burglar {
      */
     public String findCombination() {
         // TODO implementare
-        return null;
+        attemps = 0;
+        String combination = "AAA";
+
+        while (true) {
+            attemps++;
+            combinationLock.setPosition(combination.charAt(0));
+            combinationLock.setPosition(combination.charAt(1));
+            combinationLock.setPosition(combination.charAt(2));
+            combinationLock.open();
+            if(combinationLock.isOpen()) return combination;
+            
+            if(combination.charAt(2) == 'Z') {
+                if(combination.charAt(1)  == 'Z') {
+                    if(combination.charAt(0)  == 'Z') return null;
+                    else combination = "" + (char) (combination.charAt(0) + 1) + "AA";
+                }
+                else combination = "" + combination.charAt(0) + (char) (combination.charAt(1) + 1) + "A";
+            }
+            else combination = "" + combination.charAt(0) + combination.charAt(1) + (char) (combination.charAt(2) + 1);
+        }
     }
 
     /**
@@ -41,6 +68,7 @@ public class Burglar {
      */
     public long getAttempts() {
         // TODO implementare
-        return -1;
+        if(attemps == 0) return -1;
+        return attemps;
     }
 }

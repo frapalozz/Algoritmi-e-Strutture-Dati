@@ -51,7 +51,7 @@ public class CombinationLock {
      */
     public void setPosition(char aPosition) {
         // TODO implementare
-        if(aPosition < 65 || aPosition > 90)
+        if(aPosition < 'A' || aPosition > 'Z')
             throw new IllegalArgumentException("Carattere non valido! Inserire una lettera maiuscola dell'alfabeto Inglese.");
 
         this.lockPosition = "" + this.lockPosition.charAt(1) + this.lockPosition.charAt(2) + aPosition;
@@ -134,7 +134,7 @@ public class CombinationLock {
             throw new IllegalArgumentException("La combinazione inserita deve essere una stringa di 3 lettere maiuscole dell'alfabeto");
 
         for(int i = 0; i < aCombination.length(); i++) {
-            if((int) aCombination.charAt(i) < 65 || (int) aCombination.charAt(i) > 90)
+            if((int) aCombination.charAt(i) < 'A' || (int) aCombination.charAt(i) > 'Z')
                 throw new IllegalArgumentException("Combinazione inserita non valida! Inserire 3 lettere maiuscole dell'alfabeto Inglese.");
         }
     }
