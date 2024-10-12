@@ -12,6 +12,13 @@ public class CombinationLock {
 
     // TODO inserire le variabili istanza che servono
 
+    private String combination;
+
+    private String lockPosition;
+
+    private boolean open;
+
+    private boolean lockPositionUnchanged;
     /**
      * Costruisce una cassaforte <b>aperta</b> con una data combinazione
      * 
@@ -24,6 +31,11 @@ public class CombinationLock {
      */
     public CombinationLock(String aCombination) {
         // TODO implementare
+        checkNewConbination(aCombination);
+
+        this.combination = aCombination;
+        this.lockPosition = aCombination;
+        this.open = true;
     }
 
     /**
@@ -39,6 +51,11 @@ public class CombinationLock {
      */
     public void setPosition(char aPosition) {
         // TODO implementare
+        if(aPosition < 65 || aPosition > 90)
+            throw new IllegalArgumentException("Carattere non valido! Inserire una lettera maiuscola dell'alfabeto Inglese.");
+
+        this.lockPosition = "" + this.lockPosition.charAt(1) + this.lockPosition.charAt(2) + aPosition;
+        this.lockPositionUnchanged = false;
     }
 
     /**
@@ -49,6 +66,13 @@ public class CombinationLock {
      */
     public void open() {
         // TODO implementare
+        if(this.lockPositionUnchanged || this.lockPosition.charAt(0) == '0') return;
+
+        if(this.lockPosition.equals(this.combination)) this.open = true;
+        else {
+            this.lockPositionUnchanged = true;
+            this.lockPosition = "000";
+        }
     }
 
     /**
@@ -58,7 +82,7 @@ public class CombinationLock {
      */
     public boolean isOpen() {
         // TODO implementare
-        return false;
+        return open;
     }
 
     /**
@@ -70,6 +94,8 @@ public class CombinationLock {
      */
     public void lock() {
         // TODO implementare
+        this.open = false;
+        this.lockPositionUnchanged = true;
     }
 
     /**
@@ -88,5 +114,28 @@ public class CombinationLock {
      */
     public void lockAndChangeCombination(String aCombination) {
         // TODO implementare
+
+        checkNewConbination(aCombination);
+
+        if(open){
+            this.combination = aCombination;
+            this.lockPositionUnchanged = true;
+            this.open = false;
+        }
+        else this.lockPositionUnchanged = true;
+    }
+
+    // Ho creato questo nuovo metodo per non ripetere due volte il controllo della nuova combinazione
+    private void checkNewConbination(String aCombination) {
+        if(aCombination == null) 
+            throw new NullPointerException("La combinazione inserita è nulla! Inserire una combinazione valida");
+
+        if(aCombination.length() != 3)
+            throw new IllegalArgumentException("La combinazione inserita deve essere una stringa di 3 lettere maiuscole dell'alfabeto");
+
+        for(int i = 0; i < aCombination.length(); i++) {
+            if((int) aCombination.charAt(i) < 65 || (int) aCombination.charAt(i) > 90)
+                throw new IllegalArgumentException("Combinazione inserita non valida! Inserire 3 lettere maiuscole dell'alfabeto Inglese.");
+        }
     }
 }
