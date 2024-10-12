@@ -10,8 +10,6 @@ package it.unicam.cs.asdl2425.es2;
  */
 public class CombinationLock {
 
-    // TODO inserire le variabili istanza che servono
-
     private String combination;
 
     private String lockPosition;
@@ -30,8 +28,7 @@ public class CombinationLock {
      * @throw NullPointerException se la combinazione fornita è nulla
      */
     public CombinationLock(String aCombination) {
-        // TODO implementare
-        checkNewConbination(aCombination);
+        checkNewCombination(aCombination);
 
         this.combination = aCombination;
         this.lockPosition = aCombination;
@@ -50,7 +47,6 @@ public class CombinationLock {
      *                                      inglese
      */
     public void setPosition(char aPosition) {
-        // TODO implementare
         if(aPosition < 'A' || aPosition > 'Z')
             throw new IllegalArgumentException("Carattere non valido! Inserire una lettera maiuscola dell'alfabeto Inglese.");
 
@@ -65,7 +61,6 @@ public class CombinationLock {
      * prossimi tentativi di apertura.
      */
     public void open() {
-        // TODO implementare
         if(this.lockPositionUnchanged || this.lockPosition.charAt(0) == '0') return;
 
         if(this.lockPosition.equals(this.combination)) this.open = true;
@@ -81,7 +76,6 @@ public class CombinationLock {
      * @return true se la cassaforte è attualmente aperta, false altrimenti
      */
     public boolean isOpen() {
-        // TODO implementare
         return open;
     }
 
@@ -93,7 +87,6 @@ public class CombinationLock {
      * sono proprio la combinazione attuale.
      */
     public void lock() {
-        // TODO implementare
         this.open = false;
         this.lockPositionUnchanged = true;
     }
@@ -113,20 +106,19 @@ public class CombinationLock {
      * @throw NullPointerException se la combinazione fornita è nulla
      */
     public void lockAndChangeCombination(String aCombination) {
-        // TODO implementare
 
-        checkNewConbination(aCombination);
+        checkNewCombination(aCombination);
 
         if(open){
             this.combination = aCombination;
-            this.lockPositionUnchanged = true;
             this.open = false;
         }
-        else this.lockPositionUnchanged = true;
+        
+        this.lockPositionUnchanged = true;
     }
 
     // Ho creato questo nuovo metodo per non ripetere due volte il controllo della nuova combinazione
-    private void checkNewConbination(String aCombination) {
+    private void checkNewCombination(String aCombination) {
         if(aCombination == null) 
             throw new NullPointerException("La combinazione inserita è nulla! Inserire una combinazione valida");
 

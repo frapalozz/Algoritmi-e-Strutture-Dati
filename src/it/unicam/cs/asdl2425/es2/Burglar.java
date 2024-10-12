@@ -9,8 +9,6 @@ package it.unicam.cs.asdl2425.es2;
  */
 public class Burglar {
 
-    // TODO inserire le variabili istanza che servono
-
     private CombinationLock combinationLock;
 
     private int attemps;
@@ -22,7 +20,6 @@ public class Burglar {
      * @throw NullPointerException se la cassaforte passata è nulla
      */
     public Burglar(CombinationLock aCombinationLock) {
-        // TODO implementare
         if(aCombinationLock == null) 
             throw new NullPointerException("La cassaforte passata è nulla!");
 
@@ -35,20 +32,25 @@ public class Burglar {
      * @return la combinazione della cassaforte forzata.
      */
     public String findCombination() {
-        // TODO implementare
         attemps = 0;
         String combination = "AAA";
 
         while (true) {
             attemps++;
+            // Imposto manopola
             combinationLock.setPosition(combination.charAt(0));
             combinationLock.setPosition(combination.charAt(1));
             combinationLock.setPosition(combination.charAt(2));
+
+            // Provo ad aprire
             combinationLock.open();
             if(combinationLock.isOpen()) return combination;
             
+            // Controllo se la terza terza posizione non superi Z
             if(combination.charAt(2) == 'Z') {
+                // Controllo se la seconda posizione non superi Z
                 if(combination.charAt(1)  == 'Z') {
+                    // Controllo se la terza posizione non superi Z
                     if(combination.charAt(0)  == 'Z') return null;
                     else combination = "" + (char) (combination.charAt(0) + 1) + "AA";
                 }
@@ -67,7 +69,6 @@ public class Burglar {
      *         forzata.
      */
     public long getAttempts() {
-        // TODO implementare
         if(attemps == 0) return -1;
         return attemps;
     }
