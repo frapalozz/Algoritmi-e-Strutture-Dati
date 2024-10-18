@@ -181,8 +181,8 @@ public class TimeSlot implements Comparable<TimeSlot> {
 
         /*
          * Controllo se l'inizio del TimeSlot si trova in mezzo al TimeSlot passato
-         * TimeSlot2 ->      ------
-         * TimeSlot1 ->    ------
+         * TimeSlot1 ->      ------
+         * TimeSlot2 ->         ------
          */
         else if(o.getStart().compareTo(this.start) >= 0 && o.getStart().compareTo(this.stop) < 0) {
             if(o.getStop().compareTo(this.stop) <= 0)
@@ -193,8 +193,8 @@ public class TimeSlot implements Comparable<TimeSlot> {
 
         /*
          * Controllo se la fine del TimeSlot si trova in mezzo al TimeSlot passato
-         * TimeSlot2 ->   ------
-         * TimeSlot1 ->     -------
+         * TimeSlot1 ->        ------
+         * TimeSlot2 ->     ------
          */
         else if(o.getStop().compareTo(this.start) > 0 && o.getStop().compareTo(this.stop) <= 0) {
             if(o.getStart().compareTo(this.start) >= 0)
