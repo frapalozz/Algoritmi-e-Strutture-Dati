@@ -4,7 +4,6 @@
 package it.unicam.cs.asdl2425.es3;
 
 // TODO completare gli import se necessario
-
 import java.util.GregorianCalendar;
 
 /**
@@ -44,6 +43,10 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     public TimeSlot(GregorianCalendar start, GregorianCalendar stop) {
         // TODO implementare
+        if(start == null || stop == null) 
+            throw new NullPointerException("Il tempo di inizio o fine sono nulli! Inserire valori validi");
+        if(start.compareTo(stop) < 0)
+            throw new IllegalArgumentException("Tempo di inizio o fine non valido! Il tempo di inizio deve essere antecedente al tempo di fine.");
         this.start = start;
         this.stop = stop;
     }
