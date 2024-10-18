@@ -15,14 +15,55 @@ import org.junit.jupiter.api.Test;
  */
 class EquazioneSecondoGradoTest {
 
+    /*
+     * Costante piccola per il confronto di due numeri double
+     */
+    private static final double EPSILON = 1.0E-15;
+
     @Test
-    final void testEquazioneSecondoGrado() {
+    public void testCostruttore() {
+        EquazioneSecondoGrado eq = new EquazioneSecondoGrado(1, 2, 1);
+        RisolutoreEquazioneDiSecondoGrado risolutore = new RisolutoreEquazioneDiSecondoGrado(
+                eq);
+        assertEquals(eq, risolutore.getE());
+    }
+
+    @Test
+    public void testSoluzioneCoincidente() {
+        EquazioneSecondoGrado eq = new EquazioneSecondoGrado(1, -2, 1);
+        RisolutoreEquazioneDiSecondoGrado risolutore = new RisolutoreEquazioneDiSecondoGrado(
+                eq);
+        SoluzioneEquazioneSecondoGrado sol = risolutore.getSolution();
+        assertTrue(sol.isOneSolution());
+        assertEquals(1, sol.getS1());
+    }
+
+    @Test
+    public void testSoluzioneVuota() {
+        EquazioneSecondoGrado eq = new EquazioneSecondoGrado(1, 0, 1);
+        RisolutoreEquazioneDiSecondoGrado risolutore = new RisolutoreEquazioneDiSecondoGrado(
+                eq);
+        SoluzioneEquazioneSecondoGrado sol = risolutore.getSolution();
+        assertTrue(sol.isEmptySolution());
+    }
+
+    @Test
+    final void testEquazioneSecondoGradoEccezione() {
         // controllo del lancio dell'eccezione
         assertThrows(IllegalArgumentException.class,
                 () -> new EquazioneSecondoGrado(0, 1, 1));
         // costruzione senza eccezione
         EquazioneSecondoGrado e1 = new EquazioneSecondoGrado(1, 1, 1);
-        assertTrue(e1.getA() == 1.0);
+    }
+
+    @Test
+    final void testEquazioneSecondoGradoGet() {
+        EquazioneSecondoGrado e1 = new EquazioneSecondoGrado(1, 1, 1);
+        assertTrue(Math.abs(e1.getA() - 1.0) < EPSILON);
+        /*
+         * Può funzionare anche == perché i valori inseriti non sono il
+         * risultato di un calcolo
+         */
         assertTrue(e1.getB() == 1.0);
         assertTrue(e1.getC() == 1.0);
     }
