@@ -4,7 +4,6 @@
 package it.unicam.cs.asdl2425.es3;
 
 import java.util.Calendar;
-// TODO completare gli import se necessario
 import java.util.GregorianCalendar;
 
 /**
@@ -95,12 +94,15 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     @Override
     public int hashCode() {
-        // TODO implementare
         final int prime = 31;
         int result = 1;
-        long temp;
+        long temp = this.start.getTimeInMillis();
+        
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = this.stop.getTimeInMillis();
+        result = prime * result + (int) (temp ^ (temp >>> 32));
 
-        return (int) Math.random() * 1000;
+        return result;
     }
 
     /*
@@ -225,7 +227,13 @@ public class TimeSlot implements Comparable<TimeSlot> {
      *                                  se il time slot passato è nullo
      */
     public boolean overlapsWith(TimeSlot o) {
-        // TODO implementare
+        if(o == null)
+            throw new NullPointerException("Il TimeSlot passato è nullo!");
+        
+        // Controlla se la sovrapposizione è > della tolleranza
+        if(this.getMinutesOfOverlappingWith(o) > MINUTES_OF_TOLERANCE_FOR_OVERLAPPING)
+            return true;
+
         return false;
     }
 

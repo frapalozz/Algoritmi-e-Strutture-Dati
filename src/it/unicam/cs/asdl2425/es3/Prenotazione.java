@@ -33,9 +33,14 @@ public class Prenotazione implements Comparable<Prenotazione> {
      */
     public Prenotazione(String aula, TimeSlot timeSlot, String docente,
             String motivo) {
-        // TODO implementare
+        
+        if(aula == null || timeSlot == null || docente == null || motivo == null)
+                throw new NullPointerException("Oggetto passato null!");
+                
         this.aula = aula;
         this.timeSlot = timeSlot;
+        this.docente = docente;
+        this.motivo = motivo;
     }
 
     /**
@@ -89,7 +94,16 @@ public class Prenotazione implements Comparable<Prenotazione> {
      */
     @Override
     public boolean equals(Object obj) {
-        // TODO implementare
+        if(obj == null)
+            return false;
+        if(this == obj)
+            return true;
+        if(!(obj instanceof Prenotazione))
+            return false;
+        
+        if(this.aula.equals(((Prenotazione) obj).getAula()) && this.timeSlot.equals(((Prenotazione) obj).getTimeSlot()))
+            return true;
+            
         return false;
     }
 
@@ -100,7 +114,15 @@ public class Prenotazione implements Comparable<Prenotazione> {
     @Override
     public int hashCode() {
         // TODO implementare
-        return -1;
+        final int prime = 31;
+        int result = 1;
+        long temp = this.aula.hashCode();
+        
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = this.timeSlot.hashCode();
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+
+        return result;
     }
 
     /*
@@ -110,8 +132,25 @@ public class Prenotazione implements Comparable<Prenotazione> {
      */
     @Override
     public int compareTo(Prenotazione o) {
-        // TODO implementare
-        return -1;
+        /*
+         * Controllo precedenza tra timeslot
+         * -1: la prenotazione è < della prenotazione passata
+         *  1: la prenotazione è > della prenotazione passata
+         */
+        int timeSlotPrecedence = this.timeSlot.compareTo(o.getTimeSlot());
+
+        if(timeSlotPrecedence != 0)
+            return timeSlotPrecedence;
+        
+        // for loop per controllare l'ordine lessicografico delle aule
+        for(int i = 0; i < ((this.aula.length() < o.getAula().length())? this.aula.length(): o.getAula().length()); i++) {
+            if(this.aula.charAt(i) < o.getAula().charAt(i))
+                return -1;
+            else if(this.aula.charAt(i) > o.getAula().charAt(i))
+                return 1;
+        }
+
+        return 0;
     }
 
     @Override
