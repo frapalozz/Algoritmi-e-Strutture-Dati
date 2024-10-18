@@ -3,6 +3,7 @@
  */
 package it.unicam.cs.asdl2425.es3;
 
+import java.util.Calendar;
 // TODO completare gli import se necessario
 import java.util.GregorianCalendar;
 
@@ -42,11 +43,11 @@ public class TimeSlot implements Comparable<TimeSlot> {
      *                                      stop
      */
     public TimeSlot(GregorianCalendar start, GregorianCalendar stop) {
-        // TODO implementare
         if(start == null || stop == null) 
             throw new NullPointerException("Il tempo di inizio o fine sono nulli! Inserire valori validi");
-        if(start.compareTo(stop) < 0)
+        if(start.compareTo(stop) > -1)
             throw new IllegalArgumentException("Tempo di inizio o fine non valido! Il tempo di inizio deve essere antecedente al tempo di fine.");
+
         this.start = start;
         this.stop = stop;
     }
@@ -72,7 +73,18 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     @Override
     public boolean equals(Object obj) {
-        // TODO implementare
+        if(this == obj)
+            return true;
+        if(obj == null) 
+            return false;
+        if(!(obj instanceof TimeSlot))
+            return false;
+
+        // Controllo se il tempo start e stop sono uguali
+        if(this.start.compareTo(((TimeSlot) obj).getStart()) == 0 && 
+            this.stop.compareTo(((TimeSlot) obj).getStop()) == 0)
+            return true;
+
         return false;
     }
 
@@ -84,7 +96,11 @@ public class TimeSlot implements Comparable<TimeSlot> {
     @Override
     public int hashCode() {
         // TODO implementare
-        return -1;
+        final int prime = 31;
+        int result = 1;
+        long temp;
+
+        return (int) Math.random() * 1000;
     }
 
     /*
@@ -94,8 +110,15 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     @Override
     public int compareTo(TimeSlot o) {
-        // TODO implementare
-        return -1;
+        if(this == o || this.equals(o)) 
+            return 0;
+
+        // Se this.start < o.getStart ritorna -1, l'opposto ritorna 1
+        if(this.start.compareTo(o.getStart()) != 0) 
+            return this.start.compareTo(o.getStart());
+
+        // Se this.stop < 0.getStop ritorna -1, l'opposto ritorna 1
+        return this.stop.compareTo(o.getStop());
     }
 
     /**
@@ -122,6 +145,9 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     public int getMinutesOfOverlappingWith(TimeSlot o) {
         // TODO implementare
+        if(o == null)
+            throw new NullPointerException("Il TimeSlot passato è nullo! Inserire un TimeSlot valido.");
+        
         return -1;
     }
 
@@ -153,8 +179,13 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     @Override
     public String toString() {
-        // TODO implementare
-        return null;
+        String dataStart = this.start.get(Calendar.DAY_OF_MONTH) + "/" + (this.start.get(Calendar.MONTH)+1) + "/" + this.start.get(Calendar.YEAR) 
+            + " " + this.start.get(Calendar.HOUR_OF_DAY) + "." + this.start.get(Calendar.MINUTE);
+        
+        String dataStop = this.stop.get(Calendar.DAY_OF_MONTH) + "/" + (this.stop.get(Calendar.MONTH)+1) + "/" + this.stop.get(Calendar.YEAR) 
+            + " " + this.stop.get(Calendar.HOUR_OF_DAY) + "." + this.stop.get(Calendar.MINUTE);
+
+        return "[" + dataStart + " - " + dataStop + "]";
     }
 
 }
