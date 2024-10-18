@@ -144,11 +144,72 @@ public class TimeSlot implements Comparable<TimeSlot> {
      *                                      superano Integer.MAX_VALUE
      */
     public int getMinutesOfOverlappingWith(TimeSlot o) {
-        // TODO implementare
         if(o == null)
             throw new NullPointerException("Il TimeSlot passato è nullo! Inserire un TimeSlot valido.");
         
-        return -1;
+        long overlappingTimeMillis = 0; // Tempo sovrapposizione in millisecondi
+        long overlappingTimeMinutes; // Tempo sovrapposizione in minuti
+
+        if(this.equals(o)) 
+            overlappingTimeMillis = this.stop.getTimeInMillis() - this.start.getTimeInMillis();
+
+        /*
+         * Controllo se l'inizio del TimeSlot si trova in mezzo al TimeSlot passato
+         * TimeSlot1 ->      ------
+         * TimeSlot2 ->    ------
+         */
+        else if(this.start.compareTo(o.getStart()) >= 0 && this.start.compareTo(o.getStop()) < 0) {
+            if(this.stop.compareTo(o.getStop()) <= 0)
+                overlappingTimeMillis = this.stop.getTimeInMillis() - this.start.getTimeInMillis();
+            else 
+                overlappingTimeMillis = o.getStop().getTimeInMillis() - this.start.getTimeInMillis();
+        }
+
+        /*
+         * Controllo se la fine del TimeSlot si trova in mezzo al TimeSlot passato
+         * TimeSlot1 ->   ------
+         * TimeSlot2 ->     -------
+         */
+        else if(this.stop.compareTo(o.getStart()) > 0 && this.stop.compareTo(o.getStop()) <= 0) {
+            if(this.start.compareTo(o.getStart()) >= 0)
+                overlappingTimeMillis = this.stop.getTimeInMillis() - this.start.getTimeInMillis();
+            else    
+                overlappingTimeMillis = this.stop.getTimeInMillis() - o.getStart().getTimeInMillis();
+        }
+
+        /*
+         * Controllo se l'inizio del TimeSlot si trova in mezzo al TimeSlot passato
+         * TimeSlot2 ->      ------
+         * TimeSlot1 ->    ------
+         */
+        else if(o.getStart().compareTo(this.start) >= 0 && o.getStart().compareTo(this.stop) < 0) {
+            if(o.getStop().compareTo(this.stop) <= 0)
+                overlappingTimeMillis = o.getStop().getTimeInMillis() - o.getStart().getTimeInMillis();
+            else 
+                overlappingTimeMillis = this.stop.getTimeInMillis() - o.getStart().getTimeInMillis();
+        }
+
+        /*
+         * Controllo se la fine del TimeSlot si trova in mezzo al TimeSlot passato
+         * TimeSlot2 ->   ------
+         * TimeSlot1 ->     -------
+         */
+        else if(o.getStop().compareTo(this.start) > 0 && o.getStop().compareTo(this.stop) <= 0) {
+            if(o.getStart().compareTo(this.start) >= 0)
+                overlappingTimeMillis = o.getStop().getTimeInMillis() - o.getStart().getTimeInMillis();
+            else    
+                overlappingTimeMillis = o.getStop().getTimeInMillis() - this.start.getTimeInMillis();
+        }
+
+        if(overlappingTimeMillis == 0) 
+            return -1;
+        
+        overlappingTimeMinutes = overlappingTimeMillis / 60000;
+
+        if(overlappingTimeMinutes > Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Minuti di sovrapposizione troppo grande!");
+        
+        return (int) overlappingTimeMinutes;
     }
 
     /**
