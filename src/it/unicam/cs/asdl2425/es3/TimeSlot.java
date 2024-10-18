@@ -180,7 +180,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
         }
 
         /*
-         * Controllo se l'inizio del TimeSlot si trova in mezzo al TimeSlot passato
+         * Controllo se l'inizio del TimeSlot passato si trova in mezzo al TimeSlot
          * TimeSlot1 ->      ------
          * TimeSlot2 ->         ------
          */
@@ -192,7 +192,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
         }
 
         /*
-         * Controllo se la fine del TimeSlot si trova in mezzo al TimeSlot passato
+         * Controllo se la fine del TimeSlot passato si trova in mezzo al TimeSlot
          * TimeSlot1 ->        ------
          * TimeSlot2 ->     ------
          */
