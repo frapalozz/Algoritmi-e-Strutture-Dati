@@ -113,7 +113,6 @@ public class Prenotazione implements Comparable<Prenotazione> {
      */
     @Override
     public int hashCode() {
-        // TODO implementare
         final int prime = 31;
         int result = 1;
         long temp = this.aula.hashCode();
