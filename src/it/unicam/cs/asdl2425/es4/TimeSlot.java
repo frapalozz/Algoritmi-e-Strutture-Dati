@@ -108,19 +108,18 @@ public class TimeSlot implements Comparable<TimeSlot> {
      */
     @Override
     public int compareTo(TimeSlot o) {
-        if (o == null)
-            throw new NullPointerException(
-                    "Tentativo di comparare un time slot nullo");
-        int comparazione = this.start.compareTo(o.start);
-        if (comparazione != 0)
-            // i due time slot non iniziano nello stesso momento, quindi comparazione dà
-            // il valore giusto di ritorno
-            return comparazione;
-        // i due time slot iniziano nello stesso momento
-        comparazione = this.stop.compareTo(o.stop);
-        // se zero allora sono uguali, altrimenti comparazione dà il valore giusto di
-        // ritorno
-        return comparazione;
+        if(o == null)
+            throw new NullPointerException("Il timeslot passato è null!");
+
+        if(this == o || this.equals(o)) 
+            return 0;
+
+        // Se this.start < o.getStart ritorna -1, l'opposto ritorna 1
+        if(this.start.compareTo(o.getStart()) != 0) 
+            return this.start.compareTo(o.getStart());
+
+        // Se this.stop < 0.getStop ritorna -1, l'opposto ritorna 1
+        return this.stop.compareTo(o.getStop());
     }
 
     /**

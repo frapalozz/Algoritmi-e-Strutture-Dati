@@ -67,7 +67,10 @@ public class Aula implements Comparable<Aula> {
      *                                  richieste è nulla
      */
     public Aula(String nome, String location) {
-        // TODO implementare
+        if(nome == null)
+            throw new NullPointerException("nome è null! Inserire valore valido.");
+        if(location == null)
+            throw new NullPointerException("location è null! Inserire valore valido.");
         this.nome = nome;
         this.location = location;
 
@@ -78,22 +81,36 @@ public class Aula implements Comparable<Aula> {
      */
     @Override
     public int hashCode() {
-        // TODO implementare
-        return -1;
+        final int prime = 31;
+        int result = 1;
+        return prime * result + nome.hashCode();
     }
 
     /* Due aule sono uguali se e solo se hanno lo stesso nome */
     @Override
     public boolean equals(Object obj) {
         // TODO implementare
-        return false;
+        if(obj == null)
+            return false;
+        if(this == obj)
+            return true;
+        if(!(obj instanceof Aula))
+            return false;
+        
+        Aula otherAula = (Aula) obj;
+
+        return this.nome.equals(otherAula.getNome());
     }
 
     /* L'ordinamento naturale si basa sul nome dell'aula */
     @Override
     public int compareTo(Aula o) {
-        // TODO implementare
-        return -1;
+        if(o == null)
+            throw new NullPointerException("Aula passata è null!");
+        
+        if(this == o)
+            return 0;
+        return this.nome.compareTo(o.nome);
     }
 
     /**
