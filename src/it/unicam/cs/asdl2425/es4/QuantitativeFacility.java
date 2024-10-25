@@ -50,8 +50,17 @@ public class QuantitativeFacility extends Facility {
      */
     @Override
     public boolean satisfies(Facility o) {
-        // TODO implementare
-        return false;
+        if(o == null)
+            throw new NullPointerException("La Facility passata è null!");
+        if(this == o)
+            return true;
+        if(!(o instanceof QuantitativeFacility))
+            return false;
+
+        QuantitativeFacility otherFacility = (QuantitativeFacility) o;
+
+        return (this.getCodice().equals(otherFacility.getCodice()) && 
+                this.getQuantity() >= otherFacility.getQuantity());
     }
 
 }
