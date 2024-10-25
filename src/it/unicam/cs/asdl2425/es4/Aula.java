@@ -74,6 +74,9 @@ public class Aula implements Comparable<Aula> {
         this.nome = nome;
         this.location = location;
 
+        this.facilities = new Facility[INIT_NUM_FACILITIES];
+        this.prenotazioni = new Prenotazione[INIT_NUM_PRENOTAZIONI];
+
     }
 
     /*
@@ -89,7 +92,6 @@ public class Aula implements Comparable<Aula> {
     /* Due aule sono uguali se e solo se hanno lo stesso nome */
     @Override
     public boolean equals(Object obj) {
-        // TODO implementare
         if(obj == null)
             return false;
         if(this == obj)
@@ -167,15 +169,31 @@ public class Aula implements Comparable<Aula> {
      *                                  se la facility passata è nulla
      */
     public boolean addFacility(Facility f) {
+        if(f == null)
+            throw new NullPointerException("Facility passata null!");
+
+        // Controllo se non è già stata inserita la stessa facility
+        for(int i = 0; i < numFacilities; i++) {
+            if(facilities[i].equals(f))
+                return false;
+        }
+
         /*
-         * Nota: attenzione! Per controllare se una facility è già presente
-         * bisogna usare il metodo equals della classe Facility.
-         * 
-         * Nota: attenzione bis! Si noti che per le sottoclassi di Facility non
-         * è richiesto di ridefinire ulteriormente il metodo equals...
+         * Se l'array facilities ha raggiunto il limite 
+         * raddoppio la sua dimensione ed inserisco la nuova facility
+         * Altrimenti inserisco semplicemente la nuova facility
          */
-        // TODO implementare
-        return false;
+        if(numFacilities == facilities.length) {
+            Facility[] facilityHolder = facilities;
+            facilities = new Facility[numFacilities*2];
+
+            for(int i = 0; i < numFacilities; i++)
+                facilities[i] = facilityHolder[i];
+        }
+
+        facilities[numFacilities++] = f;
+
+        return true;
     }
 
     /**
@@ -191,8 +209,15 @@ public class Aula implements Comparable<Aula> {
      *                                  se il time slot passato è nullo
      */
     public boolean isFree(TimeSlot ts) {
-        // TODO implementare
-        return false;
+        if(ts == null)
+            throw new NullPointerException("TimeSlot passato null!");
+
+        for(int i = 0; i < numPrenotazioni; i++) {
+            if(prenotazioni[i].getTimeSlot().overlapsWith(ts))
+                return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -209,8 +234,28 @@ public class Aula implements Comparable<Aula> {
      *                                  se il set di facility richieste è nullo
      */
     public boolean satisfiesFacilities(Facility[] requestedFacilities) {
-        // TODO implementare
-        return false;
+        if(requestedFacilities == null) 
+            throw new NullPointerException("Il set di facility richieste è null!");
+
+        // Loop sulle requestedFacilities
+        for(int i = 0; i < requestedFacilities.length; i++) {
+            
+            // Controllo se la requestedFacility è null
+            if(requestedFacilities[i] == null) continue;
+
+            // Controllo se la requestedFacility è soddisfatta
+            for(int j = 0; j < numFacilities; j++) {
+                if(facilities[j].equals(requestedFacilities[i]))
+                    break;
+                /*
+                 * Se si è arrivati all'ultimo elemento delle facilites allora vuol dire che 
+                 * la requestedfacility non è soddisfatta
+                 */
+                if(j == numFacilities-1) return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -228,8 +273,36 @@ public class Aula implements Comparable<Aula> {
      *                                      richieste è nulla.
      */
     public void addPrenotazione(TimeSlot ts, String docente, String motivo) {
-        // TODO implementare
-    }
+        if(ts == null)
+            throw new NullPointerException("TimeSlot è null!");
+        if(docente == null)
+            throw new NullPointerException("docente è null!");
+        if(motivo == null)
+            throw new NullPointerException("motivo è null!");
 
-    // TODO inserire eventuali metodi privati per questioni di organizzazione
+        // Controllo sovrapposizione tempo con altre prenotazioni
+        for(int i = 0; i < numPrenotazioni; i++) {
+            if(prenotazioni[i].getTimeSlot().overlapsWith(ts))
+                throw new IllegalArgumentException("La prenotazione comporta una sovrapposizione con un'altra prenotazione nella stessa aula!");
+        }
+        
+
+        /*
+         * Se non ci sono sovrapposizioni allora si aggiunge la prenotazione 
+         * alla lista prenotazioni
+         */
+
+         /*
+          * Ingrandimento array prenotazioni se raggiunta la massima capienza
+          */
+        if(numPrenotazioni == prenotazioni.length) {
+            Prenotazione[] prenotazioniHolder = prenotazioni;
+            prenotazioni = new Prenotazione[numPrenotazioni*2];
+
+            for(int i = 0; i < numPrenotazioni; i++)
+                prenotazioni[i] = prenotazioniHolder[i];
+        }
+
+        prenotazioni[numPrenotazioni++] = new Prenotazione(this, ts, docente, motivo);
+    }
 }

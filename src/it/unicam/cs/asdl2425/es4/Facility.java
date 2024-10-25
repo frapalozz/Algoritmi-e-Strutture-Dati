@@ -28,8 +28,6 @@ public abstract class Facility {
     public Facility(String codice, String descrizione) {
         if(codice == null || descrizione == null)
             throw new NullPointerException("codice o descrizione sono Nulli, inserire valori validi!");
-        if(codice.equals("") || descrizione.equals(""))
-            throw new IllegalArgumentException("inserire valori validi per codice e descrizione");
         this.codice = codice;
         this.descrizione = descrizione;
     }
