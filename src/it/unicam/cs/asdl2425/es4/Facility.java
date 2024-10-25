@@ -26,7 +26,10 @@ public abstract class Facility {
      *                                  richieste è nulla.
      */
     public Facility(String codice, String descrizione) {
-        // TODO implementare
+        if(codice == null || descrizione == null)
+            throw new NullPointerException("codice o descrizione sono Nulli, inserire valori validi!");
+        if(codice.equals("") || descrizione.equals(""))
+            throw new IllegalArgumentException("inserire valori validi per codice e descrizione");
         this.codice = codice;
         this.descrizione = descrizione;
     }
@@ -51,8 +54,9 @@ public abstract class Facility {
      */
     @Override
     public int hashCode() {
-        // TODO implementare
-        return -1;
+        final int prime = 31;
+        int result = 1;
+        return prime * result + codice.hashCode();
     }
 
     /*
@@ -60,8 +64,14 @@ public abstract class Facility {
      */
     @Override
     public boolean equals(Object obj) {
-        // TODO implementare
-        return false;
+        if(obj == null)
+            return false;
+        if(this == obj) 
+            return true;
+        if(!(obj instanceof Facility))
+            return false;
+        
+        return this.codice.equals((( Facility) obj).getCodice());
     }
 
     @Override
