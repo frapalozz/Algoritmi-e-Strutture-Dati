@@ -1,6 +1,7 @@
 package it.unicam.cs.asdl2425.es5;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -31,8 +32,11 @@ public class GestoreAule {
      *                                  se l'aula passata è nulla
      */
     public boolean addAula(Aula a) {
-        // TODO implementare
-        return false;
+        if(a == null)
+            throw new NullPointerException("aula passata è null! Inserire valore valido");
+
+        // Aggiungi aula
+        return aule.add(a);
     }
 
     /**
@@ -63,8 +67,29 @@ public class GestoreAule {
      */
     public Set<Aula> cercaAuleLibere(Set<Facility> requestedFacilities,
             TimeSlot ts) {
-        // TODO implementare
-        return null;
+        if(requestedFacilities == null)
+            throw new NullPointerException("requestedFacilities passato è null! Inserire valore valido");
+        if(ts == null)
+                throw new NullPointerException("timeslot passato è null! Inserire valore valido");
+
+        // Set di aule che soddisfano i requisiti
+        Set<Aula> auleTrovate = new HashSet<Aula>();
+
+        // Iterator di aule
+        Iterator<Aula> auleIterator = aule.iterator();
+        Aula aula = null;
+
+        // ricerca aule 
+        while (auleIterator.hasNext()) {
+            aula = auleIterator.next();
+
+            // Se l'aula ha i requisiti, allora viene aggiunta a auleTrovate
+            if(aula.isFree(ts) && aula.satisfiesFacilities(requestedFacilities)) 
+                auleTrovate.add(aula);
+        }
+        
+
+        return auleTrovate;
     }
 
 }
