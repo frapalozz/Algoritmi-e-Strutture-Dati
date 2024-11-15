@@ -213,7 +213,6 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        // TODO implementare
         if(o == null)
             throw new NullPointerException("Elemento passato null!");
 
@@ -230,7 +229,6 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public boolean add(E e) {
-        // TODO implementare
         if(e == null)
             throw new NullPointerException("Elemento passato null!");
 
@@ -256,8 +254,51 @@ public class SingleLinkedList<E> implements List<E> {
     @Override
     public boolean remove(Object o) {
         // TODO implementare
-        this.numeroModifiche++;
+        if(o == null)
+            throw new NullPointerException("elemento passato null!");
 
+        if(this.size == 0) 
+            return false;
+        
+        Node<E> node = this.head;
+        Node<E> previousNode = null;
+
+        // Uguale head
+        if(this.head.item.equals(o)) {
+            if(this.size == 1) {
+                this.head = null;
+                this.tail = null;
+            }
+            else {
+                this.head = node.next;
+            }
+            
+            this.numeroModifiche++;
+            this.size--;
+            return true;
+        }
+
+        while (node != null) {
+
+            if(node.item.equals(o)) {
+                
+                if(node.next == null) {
+                    previousNode.next = null;
+                    this.tail = previousNode;
+                }
+                else {
+                    previousNode = node.next;
+                }
+
+                this.numeroModifiche++;
+                this.size--;
+                return true;
+            }
+
+            previousNode = node;
+            node = node.next;
+        }
+    
         return false;
     }
 
