@@ -253,7 +253,6 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
-        // TODO implementare
         if(o == null)
             throw new NullPointerException("elemento passato null!");
 
@@ -314,8 +313,14 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public E get(int index) {
-        // TODO implementare
-        return null;
+        if(!(index < this.size) || index < 0) 
+            throw new IndexOutOfBoundsException("Index fuori range!");
+
+        Iterator<E> iterator = new Itr();
+        for(int i = 0; i < index; i++)
+            iterator.next();
+
+        return iterator.next();
     }
 
     @Override
