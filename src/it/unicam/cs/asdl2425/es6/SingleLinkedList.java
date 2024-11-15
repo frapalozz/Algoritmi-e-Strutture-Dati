@@ -214,18 +214,50 @@ public class SingleLinkedList<E> implements List<E> {
     @Override
     public boolean contains(Object o) {
         // TODO implementare
+        if(o == null)
+            throw new NullPointerException("Elemento passato null!");
+
+        // Creazione Iterator
+        Iterator<E> iterator = new Itr();
+
+        // Cerca elemento
+        while (iterator.hasNext()) 
+            if(iterator.next().equals(o))
+                return true;
+        
         return false;
     }
 
     @Override
     public boolean add(E e) {
         // TODO implementare
-        return false;
+        if(e == null)
+            throw new NullPointerException("Elemento passato null!");
+
+
+        Node<E> newTail = new Node<E>(e, null);
+
+        // Se la linkedList è vuota allora crea la head
+        if(this.size == 0) {
+            this.head = newTail;
+            this.tail = newTail;
+        }
+        // Se la linkList non è vuota allora aggiungi elemento alla coda
+        else {
+            this.tail.next = newTail;
+            this.tail = newTail;
+        }
+        
+        this.numeroModifiche++;
+        this.size++;
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
         // TODO implementare
+        this.numeroModifiche++;
+
         return false;
     }
 
