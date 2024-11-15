@@ -260,10 +260,11 @@ public class SingleLinkedList<E> implements List<E> {
         if(this.size == 0) 
             return false;
         
+        //
         Node<E> node = this.head;
-        Node<E> previousNode = null;
+        Node<E> previousNode = node;
 
-        // Uguale head
+        // Controlla se uguale a Head
         if(this.head.item.equals(o)) {
             if(this.size == 1) {
                 this.head = null;
@@ -278,17 +279,21 @@ public class SingleLinkedList<E> implements List<E> {
             return true;
         }
 
+        node = node.next;
+
+        // Cerca elemento dentro linkedList
         while (node != null) {
 
             if(node.item.equals(o)) {
                 
+                // Se siamo nella coda
                 if(node.next == null) {
                     previousNode.next = null;
                     this.tail = previousNode;
                 }
-                else {
+                // Se non siamo nella coda
+                else 
                     previousNode = node.next;
-                }
 
                 this.numeroModifiche++;
                 this.size--;
