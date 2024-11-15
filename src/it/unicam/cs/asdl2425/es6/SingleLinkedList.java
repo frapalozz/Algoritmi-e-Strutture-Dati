@@ -308,12 +308,15 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public void clear() {
-        // TODO implementare
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
+        this.numeroModifiche++;
     }
 
     @Override
     public E get(int index) {
-        if(!(index < this.size) || index < 0) 
+        if(index >= this.size || index < 0) 
             throw new IndexOutOfBoundsException("Index fuori range!");
 
         Iterator<E> iterator = new Itr();
@@ -325,38 +328,186 @@ public class SingleLinkedList<E> implements List<E> {
 
     @Override
     public E set(int index, E element) {
-        // TODO implementare
-        return null;
+        if(element == null)
+            throw new NullPointerException("element è null!");
+
+        if(index >= this.size || index < 0)
+            throw new IndexOutOfBoundsException("Index fouri range!");
+        
+        this.numeroModifiche++;
+
+        // Elemento da aggiungere a inizio lista
+        if(index == 0) {
+            E oldItem = this.head.item;
+            this.head.item = element;
+            return oldItem;
+        }
+
+        // Elemento da aggiungere a fine lista
+        if(index == this.size) {
+            Node<E> newNode = new Node<E>(element, null);
+            E oldItem = this.tail.item;
+            this.tail.next = newNode;
+            this.tail = newNode;
+            return oldItem;
+        }
+
+        Node<E> node = this.head;
+        for(int i = 1; i <= index; i++) 
+            node = node.next;
+        E oldItem = node.item;
+        node.item = element;
+
+        
+        return oldItem;
+        
     }
 
     @Override
     public void add(int index, E element) {
-        // TODO implementare
+        if(element == null)
+            throw new NullPointerException("element è null!");
 
+        if(index > this.size || index < 0)
+            throw new IndexOutOfBoundsException("Index fouri range!");
+
+        this.size++;
+        this.numeroModifiche++;
+
+        // Se primo elemento della lista
+        if(this.size-1 == 0) {
+            Node<E> newNode = new Node<E>(element, null);
+            this.tail = newNode;
+            this.head = newNode;
+            return;
+        }
+
+        // Elemento da aggiungere a inizio lista
+        if(index == 0) {
+            Node<E> newNode = new Node<E>(element, this.head);
+            this.head = newNode;
+            return;
+        }
+
+        // Elemento da aggiungere a fine lista
+        if(index == this.size) {
+            Node<E> newNode = new Node<E>(element, null);
+            this.tail.next = newNode;
+            this.tail = newNode;
+            return;
+        }
+
+        // Elemento da giungere nel mezzo
+        Node<E> node = this.head;
+        Node<E> previousNode = null;
+        for(int i = 1; i < index; i++) 
+            node = node.next;
+
+        previousNode = node;
+        node = node.next;
+
+        previousNode.next = new Node<E>(element, node);
     }
 
     @Override
     public E remove(int index) {
-        // TODO implementare
-        return null;
+        if(index >= this.size || index < 0)
+            throw new IndexOutOfBoundsException("Index fouri range!");
+
+        this.size--;
+        this.numeroModifiche++;
+
+        // Se lista da 1 elemento
+        if(this.size+1 == 1) {
+            E item = this.head.item;
+            this.tail = null;
+            this.head = null;
+            return item;
+        }
+
+        // Elemento da rimuovere a inizio lista
+        if(index == 0) {
+            E item = this.head.item;
+            this.head = this.head.next;
+            return item;
+        }
+
+        // Elemento da rimuovere a fine lista
+        if(index == this.size) {
+            E item = this.tail.item;
+
+            Node<E> node = this.head;
+            for(int i = 1; i < index; i++) 
+                node = node.next;
+            this.tail = node;
+            node.next = null;
+
+            return item;
+        }
+
+        // Elemento da rimuovere nel mezzo
+        Node<E> node = this.head;
+        Node<E> nextNode = null;
+        for(int i = 1; i < index; i++) 
+            node = node.next;
+        
+        E item = node.next.item;
+        nextNode = node.next.next;
+
+        node.next = nextNode;
+        return item;
     }
 
     @Override
     public int indexOf(Object o) {
-        // TODO implementare
+        if(o == null)
+            throw new NullPointerException("oggetto passato è null!");
+
+        // lista vuota
+        if(this.size == 0)
+            return -1;
+        
+        int index = 0;
+        Iterator<E> iterator = new Itr();
+
+        // cerca indice
+        while (iterator.hasNext()) {
+            if(iterator.next() == o)
+                return index;
+            index++;
+        }
+
         return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        // TODO implementare
-        return -1;
+        if(o == null)
+            throw new NullPointerException("elemento passato null!");
+
+        int index = -1;
+        int i = 0;
+        Iterator<E> iterator = new Itr();
+
+        // cerca elemento
+        while (iterator.hasNext()) {
+            if(iterator.next() == o)    
+                index = i;
+            i++;
+        }
+
+        return index;
     }
 
     @Override
     public Object[] toArray() {
-        // TODO implementare
-        return null;
+        Object[] array = new Object[this.size];
+        Iterator<E> iterator = new Itr();
+
+        for(int i = 0; i < this.size; i++) 
+            array[i] = iterator.next();
+        
+        return array;
     }
 
     @Override
