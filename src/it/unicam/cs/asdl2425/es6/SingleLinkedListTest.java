@@ -416,4 +416,33 @@ class SingleLinkedListTest {
         assertEquals(-1, sLL.indexOf(23));
         assertEquals(-1, sLL.lastIndexOf(23));
     }
+
+    @Test
+    final void testToArray() {
+        SingleLinkedList<Integer> listArray = new SingleLinkedList<>();
+        int[] array = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        for (int i : array) {
+            listArray.add(i);
+        }
+
+        Object[] listToArray = listArray.toArray();
+
+        for (int i = 0; i < listToArray.length; i++) {
+            assertTrue( (Integer) listToArray[i] == array[i]);
+        }
+
+        SingleLinkedList<String> listString = new SingleLinkedList<>();
+        String[] arrayString = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+
+        for (String string : arrayString) {
+            listString.add(string);
+        }
+
+        Object[] listStringToArray = listString.toArray();
+
+        for(int i = 0; i < listStringToArray.length; i++) {
+            assertTrue(((String) listStringToArray[i]).equals(arrayString[i]));
+        }
+    }
 }
