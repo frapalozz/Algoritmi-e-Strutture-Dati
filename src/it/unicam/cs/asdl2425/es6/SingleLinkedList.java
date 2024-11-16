@@ -216,15 +216,21 @@ public class SingleLinkedList<E> implements List<E> {
         if(o == null)
             throw new NullPointerException("Elemento passato null!");
 
-        // Creazione Iterator
-        Iterator<E> iterator = new Itr();
+        // for-each con iteratore di questa classe, implicitamente
+        for (E e : this) 
+            if(e.equals(o))
+                return true;
 
-        // Cerca elemento
+        return false;
+
+        // Ricerca con iteratore, esplecitamente
+        /* Iterator<E> iterator = new Itr();
+        
         while (iterator.hasNext()) 
             if(iterator.next().equals(o))
                 return true;
         
-        return false;
+        return false; */
     }
 
     @Override
@@ -259,7 +265,7 @@ public class SingleLinkedList<E> implements List<E> {
         if(this.size == 0) 
             return false;
         
-        //
+        
         Node<E> node = this.head;
         Node<E> previousNode = node;
 
@@ -269,9 +275,7 @@ public class SingleLinkedList<E> implements List<E> {
                 this.head = null;
                 this.tail = null;
             }
-            else {
-                this.head = node.next;
-            }
+            else this.head = node.next;
             
             this.numeroModifiche++;
             this.size--;
@@ -336,31 +340,23 @@ public class SingleLinkedList<E> implements List<E> {
         
         this.numeroModifiche++;
 
-        // Elemento da aggiungere a inizio lista
-        if(index == 0) {
-            E oldItem = this.head.item;
-            this.head.item = element;
-            return oldItem;
-        }
-
-        // Elemento da aggiungere a fine lista
-        if(index == this.size) {
-            Node<E> newNode = new Node<E>(element, null);
+        // Elemento da settare a fine lista
+        if(index == this.size-1) {
             E oldItem = this.tail.item;
-            this.tail.next = newNode;
-            this.tail = newNode;
+            this.tail.item = element;
             return oldItem;
         }
 
+        // raggiungi nodo al punto index
         Node<E> node = this.head;
-        for(int i = 1; i <= index; i++) 
+        for(int i = 0; i < index; i++) 
             node = node.next;
+
+        // Prendi vecchio elemento e sostituisci
         E oldItem = node.item;
         node.item = element;
-
         
         return oldItem;
-        
     }
 
     @Override
@@ -371,42 +367,27 @@ public class SingleLinkedList<E> implements List<E> {
         if(index > this.size || index < 0)
             throw new IndexOutOfBoundsException("Index fouri range!");
 
-        this.size++;
-        this.numeroModifiche++;
-
-        // Se primo elemento della lista
-        if(this.size-1 == 0) {
-            Node<E> newNode = new Node<E>(element, null);
-            this.tail = newNode;
-            this.head = newNode;
-            return;
-        }
-
-        // Elemento da aggiungere a inizio lista
-        if(index == 0) {
-            Node<E> newNode = new Node<E>(element, this.head);
-            this.head = newNode;
-            return;
-        }
-
-        // Elemento da aggiungere a fine lista
-        if(index == this.size) {
-            Node<E> newNode = new Node<E>(element, null);
-            this.tail.next = newNode;
-            this.tail = newNode;
+        // Se primo elemento della lista, o elemento da aggiungere a fine lista
+        if(this.size == 0 || index == this.size) {
+            this.add(element);
             return;
         }
 
         // Elemento da giungere nel mezzo
         Node<E> node = this.head;
         Node<E> previousNode = null;
-        for(int i = 1; i < index; i++) 
+        for(int i = 0; i < index; i++){
+            previousNode = node;
             node = node.next;
+        }
 
-        previousNode = node;
-        node = node.next;
+        // Controlla se bisogna aggiungere elemento ad index 0
+        if(previousNode == null) 
+            this.head = new Node<E>(element, node.next);
+        else previousNode.next = new Node<E>(element, node);
 
-        previousNode.next = new Node<E>(element, node);
+        this.size++;
+        this.numeroModifiche++;
     }
 
     @Override
@@ -414,47 +395,45 @@ public class SingleLinkedList<E> implements List<E> {
         if(index >= this.size || index < 0)
             throw new IndexOutOfBoundsException("Index fouri range!");
 
-        this.size--;
-        this.numeroModifiche++;
+        E item = null;
 
         // Se lista da 1 elemento
-        if(this.size+1 == 1) {
-            E item = this.head.item;
-            this.tail = null;
-            this.head = null;
+        if(this.size == 1) {
+            item = this.head.item;
+            this.clear();
             return item;
         }
 
         // Elemento da rimuovere a inizio lista
         if(index == 0) {
-            E item = this.head.item;
+            item = this.head.item;
             this.head = this.head.next;
-            return item;
         }
-
         // Elemento da rimuovere a fine lista
-        if(index == this.size) {
-            E item = this.tail.item;
+        else if(index == this.size) {
+            item = this.tail.item;
 
             Node<E> node = this.head;
             for(int i = 1; i < index; i++) 
                 node = node.next;
             this.tail = node;
             node.next = null;
+        }
+        // Elemento da rimuovere nel mezzo
+        else {
+            Node<E> node = this.head;
+            Node<E> nextNode = null;
+            for(int i = 1; i < index; i++) 
+                node = node.next;
+            
+            item = node.next.item;
+            nextNode = node.next.next;
 
-            return item;
+            node.next = nextNode;
         }
 
-        // Elemento da rimuovere nel mezzo
-        Node<E> node = this.head;
-        Node<E> nextNode = null;
-        for(int i = 1; i < index; i++) 
-            node = node.next;
-        
-        E item = node.next.item;
-        nextNode = node.next.next;
-
-        node.next = nextNode;
+        this.size--;
+        this.numeroModifiche++;
         return item;
     }
 
@@ -462,17 +441,11 @@ public class SingleLinkedList<E> implements List<E> {
     public int indexOf(Object o) {
         if(o == null)
             throw new NullPointerException("oggetto passato è null!");
-
-        // lista vuota
-        if(this.size == 0)
-            return -1;
         
         int index = 0;
-        Iterator<E> iterator = new Itr();
-
-        // cerca indice
-        while (iterator.hasNext()) {
-            if(iterator.next() == o)
+        // cerca indice elemento == o
+        for (E e : this) {
+            if(e.equals(o))
                 return index;
             index++;
         }
@@ -487,11 +460,9 @@ public class SingleLinkedList<E> implements List<E> {
 
         int index = -1;
         int i = 0;
-        Iterator<E> iterator = new Itr();
-
-        // cerca elemento
-        while (iterator.hasNext()) {
-            if(iterator.next() == o)    
+        // cerca indice elemento == o
+        for (E e : this) {
+            if(e.equals(o))
                 index = i;
             i++;
         }

@@ -193,6 +193,9 @@ class SingleLinkedListTest {
 
         assertTrue(list.size() == 7);
 
+        list.add(0, "5");
+        assertTrue(list.get(0).equals("5"));
+
         Iterator<String> iterator = list.iterator();
         assertTrue(iterator.hasNext());
 
