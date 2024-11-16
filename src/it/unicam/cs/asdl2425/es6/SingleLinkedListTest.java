@@ -18,6 +18,10 @@ class SingleLinkedListTest {
         list.add(1);
         assertTrue(list.contains(1));
         assertFalse(list.contains(2));
+        list.add(39);
+        assertTrue(list.contains(39));
+        assertTrue(list.contains(1));
+        assertFalse(list.contains(5));
     }
 
     @Test
@@ -39,6 +43,12 @@ class SingleLinkedListTest {
 
         assertTrue(list.add(1));
         assertTrue(list.size() == 4);
+
+        Iterator<Integer> iterator = list.iterator();
+        assertTrue(iterator.hasNext());
+        assertTrue(1 == iterator.next());
+        list.add(9);
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
     }
 
     @Test
@@ -59,6 +69,16 @@ class SingleLinkedListTest {
 
         assertTrue(list.size() == 1);
         assertTrue(list.contains("Pluto"));
+
+        list.add("test1");
+        list.add("test2");
+        Iterator<String> iterator = list.iterator();
+        assertTrue(list.size() == 3);
+        assertTrue(iterator.hasNext());
+        assertTrue(iterator.next().equals("Pluto"));
+        list.remove("test1");
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
+
     }
 
     @Test
@@ -70,7 +90,13 @@ class SingleLinkedListTest {
         list.add("   ");
         list.add("    ");
 
+        Iterator<String> iterator = list.iterator();
+        assertTrue(iterator.hasNext());
+        assertTrue("".equals(iterator.next()));
+
         list.clear();
+
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
 
         assertFalse(list.contains(""));
         assertFalse(list.contains(" "));
@@ -119,7 +145,16 @@ class SingleLinkedListTest {
         list.add("5");
 
         assertEquals("0", list.set(0, "0"));
+
+        Iterator<String> iterator = list.iterator();
+        assertTrue(iterator.hasNext());
+        assertTrue(iterator.next().equals("0"));
+        assertTrue(iterator.hasNext());
+
         assertEquals("2", list.set(2, "2.5"));
+
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
+
         assertEquals("4", list.set(4, "6"));
 
         assertTrue(list.get(0).equals("0"));
@@ -157,6 +192,12 @@ class SingleLinkedListTest {
         assertTrue(list.get(6).equals("6"));
 
         assertTrue(list.size() == 7);
+
+        Iterator<String> iterator = list.iterator();
+        assertTrue(iterator.hasNext());
+
+        list.add(3, "30");
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
     }
 
     @Test
@@ -179,10 +220,14 @@ class SingleLinkedListTest {
         assertTrue(list.get(2).equals("4"));
         assertTrue(list.get(3).equals("5"));
 
+        Iterator<String> iterator = list.iterator();
+        assertTrue(iterator.hasNext());
+
         list.remove(1);
         assertTrue(list.get(0).equals("2"));
         assertTrue(list.get(1).equals("4"));
         assertTrue(list.get(2).equals("5"));
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
 
         list.remove(2);
         assertTrue(list.get(0).equals("2"));
@@ -273,7 +318,12 @@ class SingleLinkedListTest {
             sLL.add(2);
         }
         assertFalse(sLL.remove((Object) 3));
+        
+        Iterator<Integer> iterator = sLL.iterator();
+        assertTrue(iterator.hasNext());
         assertTrue(sLL.remove((Object) 2));
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
+
         assertEquals(8, sLL.size());
     }
 
@@ -285,7 +335,11 @@ class SingleLinkedListTest {
         for (int i = 0; i < 7; i++) {
             sLL.add(2);
         }
+
+        Iterator<Integer> iterator = sLL.iterator();
+        assertTrue(iterator.hasNext());
         sLL.clear();
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
         assertEquals(0, sLL.size());
         assertEquals(new SingleLinkedList<>(), sLL);
     }
@@ -313,7 +367,11 @@ class SingleLinkedListTest {
             sLL.add(2);
         }
         assertThrows(NullPointerException.class, () -> sLL.set(0, null));
+
+        Iterator<Integer> iterator = sLL.iterator();
+        assertTrue(iterator.hasNext());
         assertEquals(2, sLL.set(4, 3));
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
         assertEquals(9, sLL.size());
         assertEquals(3, sLL.get(4));
     }
@@ -331,7 +389,11 @@ class SingleLinkedListTest {
         assertEquals(2, sLL.get(4));
         assertEquals(5, sLL.get(5));
         assertEquals(2, sLL.get(6));
+
+        Iterator<Integer> iterator = sLL.iterator();
+        assertTrue(iterator.hasNext());
         assertTrue(sLL.remove(5) == 5);
+        assertThrows(ConcurrentModificationException.class, () -> iterator.next());
         assertEquals(2, sLL.get(4));
         assertEquals(2, sLL.get(5));
         assertEquals(2, sLL.get(6));
