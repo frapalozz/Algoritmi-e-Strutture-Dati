@@ -1,7 +1,9 @@
 package it.unicam.cs.asdl2425.es7;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -134,6 +136,19 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
          * concatenata lì presente
          * 
          */
+        if(o == null)
+            throw new NullPointerException("Ogetto passato è null!");
+
+        int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
+        if(table[key] == null)
+            return false;
+
+        Iterator<E> iterator = new Itr();
+        while (iterator.hasNext()) {
+            if(iterator.next().equals(o))
+                return true;
+        }
+        
         return false;
     }
 
@@ -169,7 +184,39 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         // ATTENZIONE, si inserisca prima il nuovo elemento e poi si controlli
         // se bisogna fare resize(), cioè se this.size >
         // this.getCurrentThreshold()
-        return false;
+        if(e == null)
+            throw new NullPointerException("Elemento passato è null!");
+
+        int key = this.phf.hash(e.hashCode(), this.getCurrentCapacity());
+
+        // Controlla se nella posizione key non c'è ancora nessun elemento
+        if(this.table[key] == null){
+            this.table[key] = new Node<E>(e, null);
+            this.size++;
+
+            // Resize se necessario
+            if(this.size > this.getCurrentThreshold())
+                this.resize();
+
+            this.modCount++;
+            return true;
+        }
+        
+        // Controlla se la posizione k contiene già questo elemento
+        if(this.contains(e))
+            return false;
+
+        // Crea il nuovo nodo e lo aggiungo alla posizione k
+        Node<E> nuovoElemento = new Node<E>(e, (Node<E>)this.table[key]);
+        this.table[key] = nuovoElemento;
+        this.size++;
+
+        // Resize se necessario
+        if(this.size > this.getCurrentThreshold())
+            this.resize();
+
+        this.modCount++;
+        return true;
     }
 
     /*
@@ -178,6 +225,16 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
      */
     private void resize() {
         // TODO implementare
+        CollisionListResizableHashTable<E> newHashTable = new CollisionListResizableHashTable<E>(phf);
+        newHashTable.table = new Object[this.getCurrentCapacity()*2];
+
+        Iterator<E> iterator = new Itr();
+        while (iterator.hasNext()) {
+            newHashTable.add(iterator.next());
+        }
+
+        this.table = newHashTable.table;
+        this.modCount++;
     }
 
     @Override
@@ -198,6 +255,37 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         // ATTENZIONE: la rimozione, in questa implementazione, **non** comporta
         // mai una resize "al ribasso", cioè un dimezzamento della tabella se si
         // scende sotto il fattore di bilanciamento desiderato.
+
+        int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
+        if(this.table[key] == null)
+            return false;
+        
+        // Creo nodo e nodo precedente
+        Node<E> node = (Node<E>) table[key];
+        Node<E> previousNode = null;
+
+        // Ricerca nodo da eliminare
+        while (node != null) {
+            // Trovato item
+            if(node.item.equals(o)) {
+                // Se item si trova nella prima posizione della lista, allora sposto il puntatore in avanti
+                if(previousNode == null)
+                    table[key] = node.next;
+                
+                // Se item non si trova nella prima posizione, allora il nodo precedente deve puntare al nodo successivo di quello da eliminare
+                else {
+                    previousNode = node.next;
+                }
+                this.size--;
+                this.modCount++;
+                return true;
+            }
+
+            previousNode = node;
+            node = node.next;
+        }
+
+        // elemento non trovato nella hashTable, non presente
         return false;
     }
 
@@ -206,14 +294,31 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         // TODO implementare
         // utilizzare un iteratore della collection e chiamare il metodo
         // contains
-        return false;
+        if(c == null)
+            throw new NullPointerException("Collection passata è null!");
+
+        Iterator<?> iterator = c.iterator();
+        while (iterator.hasNext()) {
+            if(!this.contains(iterator.next()));
+                return false;
+        }
+
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
         // TODO implementare
         // utilizzare un iteratore della collection e chiamare il metodo add
-        return false;
+        if(c == null)
+            throw new NullPointerException("Collection passato null!");
+            
+        Iterator<?> iterator = c.iterator();
+        while (iterator.hasNext()) {
+            this.add((E) iterator.next());
+        }
+        
+        return true;
     }
 
     @Override
@@ -225,7 +330,12 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
     public boolean removeAll(Collection<?> c) {
         // TODO implementare
         // utilizzare un iteratore della collection e chiamare il metodo remove
-        return false;
+        Iterator<?> iterator = c.iterator();
+        while (iterator.hasNext()) {
+            this.remove(iterator.next());
+        }
+
+        return true;
     }
 
     @Override
@@ -269,21 +379,62 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
         private int numeroModificheAtteso;
 
+        private int lastKey;
+        private Node<E> lastReturnedNode;
+
         private Itr() {
             // TODO implementare il resto
             this.numeroModificheAtteso = modCount;
+            this.lastKey = -1;
+            this.lastReturnedNode = null;
         }
 
         @Override
         public boolean hasNext() {
             // TODO implementare
+
+            // Vedo se dopo l'ultimo nodo controllato esiste un altro nodo
+            if(this.lastReturnedNode != null && this.lastReturnedNode.next != null)
+                return true;
+
+            if(lastKey+1 == table.length)
+                return false;
+
+            // Se non è ancora stato controllato nessun nodo o lastReturnedNode.next == null allora cerco una key che contiene almeno 1 nodo
+            for(int i = lastKey+1; i < table.length; i++) {
+                if(table[i] != null)
+                    return true;
+            }
+
+            // Se la hashTable non contiene più nessun altro elemento
             return false;
         }
 
         @Override
         public E next() {
             // TODO implementare
-            return null;
+
+            // Controllo concorrenza
+            if(modCount != this.numeroModificheAtteso)
+                throw new ConcurrentModificationException("Modifica hash table durante iteratore!");
+
+            // Controllo hasNext()
+            if(!hasNext())
+                throw new NoSuchElementException("Richiesta di next quando hasNext è falso");
+
+            // C'è sicuramente un next
+            // Vedo se dopo l'ultimo nodo controllato esiste un altro nodo
+            if(this.lastReturnedNode != null && this.lastReturnedNode.next != null) {
+                this.lastReturnedNode = this.lastReturnedNode.next;
+                return this.lastReturnedNode.item;
+            }
+
+            // Se non è ancora stato controllato nessun nodo o lastReturnedNode.next == null allora cerco una key che contiene almeno 1 nodo
+            for(int i = lastKey+1; i < table.length; i++){
+                if(table[i] != null)
+                    lastKey = i;
+            }
+            return ((Node<E>) table[lastKey]).item;
         }
 
     }
