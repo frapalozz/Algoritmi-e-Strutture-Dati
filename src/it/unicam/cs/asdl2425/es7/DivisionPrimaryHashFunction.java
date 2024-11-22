@@ -14,7 +14,7 @@ public class DivisionPrimaryHashFunction implements PrimaryHashFunction {
     /*
      * (non-Javadoc)
      * 
-     * @see it.unicam.cs.asdl1920.solhash.PrimaryHashFunction#hash(int, int)
+     * @see it.unicam.cs.asdl2425.solhash.PrimaryHashFunction#hash(int, int)
      */
     @Override
     public int hash(int key, int m) {

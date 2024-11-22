@@ -1,6 +1,3 @@
-/**
- * 
- */
 package it.unicam.cs.asdl2425.es7;
 
 import java.util.Collection;
