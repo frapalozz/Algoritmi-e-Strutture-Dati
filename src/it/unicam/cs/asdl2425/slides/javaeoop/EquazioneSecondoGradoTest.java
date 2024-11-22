@@ -53,6 +53,7 @@ class EquazioneSecondoGradoTest {
         assertThrows(IllegalArgumentException.class,
                 () -> new EquazioneSecondoGrado(0, 1, 1));
         // costruzione senza eccezione
+        @SuppressWarnings("unused")
         EquazioneSecondoGrado e1 = new EquazioneSecondoGrado(1, 1, 1);
     }
 
