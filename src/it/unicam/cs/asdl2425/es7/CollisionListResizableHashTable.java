@@ -122,33 +122,28 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         return this.size == 0;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o) {
-        // TODO implementare
-        /*
-         * ATTENZIONE: usare l'hashCode dell'oggetto e la funzione di hash
-         * primaria passata all'atto della creazione: il bucket in cui cercare
-         * l'oggetto o è la posizione
-         * this.phf.hash(o.hashCode(),this.getCurrentCapacity)
-         * 
-         * In questa posizione, se non vuota, si deve cercare l'elemento o
-         * utilizzando il metodo equals() su tutti gli elementi della lista
-         * concatenata lì presente
-         * 
-         */
         if(o == null)
             throw new NullPointerException("Ogetto passato è null!");
 
+        // Ottieni chiave per elemento o
         int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
+
+        // Se la tabella nella chiave key è vuota allora l'oggetto cercato non è presente
         if(table[key] == null)
             return false;
 
-        Iterator<E> iterator = new Itr();
-        while (iterator.hasNext()) {
-            if(iterator.next().equals(o))
+        // Ricerca oggetto in key
+        Node<E> node = (Node<E>) table[key];
+        while (node != null) {
+            if(node.item.equals(o))
                 return true;
+            node = node.next;
         }
         
+        // Oggetto non trovato
         return false;
     }
 
@@ -167,26 +162,13 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         throw new UnsupportedOperationException("Operazione non supportata");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean add(E e) {
-        // TODO implementare
-        /*
-         * ATTENZIONE: usare l'hashCode dell'oggetto e la funzione di hash
-         * primaria passata all'atto della creazione: il bucket in cui inserire
-         * l'oggetto o è la posizione
-         * this.phf.hash(o.hashCode(),this.getCurrentCapacity)
-         * 
-         * In questa posizione, se non vuota, si deve inserire l'elemento o
-         * nella lista concatenata lì presente. Se vuota, si crea la lista
-         * concatenata e si inserisce l'elemento, che sarà l'unico.
-         * 
-         */
-        // ATTENZIONE, si inserisca prima il nuovo elemento e poi si controlli
-        // se bisogna fare resize(), cioè se this.size >
-        // this.getCurrentThreshold()
         if(e == null)
             throw new NullPointerException("Elemento passato è null!");
 
+        // chiave per oggetto e
         int key = this.phf.hash(e.hashCode(), this.getCurrentCapacity());
 
         // Controlla se nella posizione key non c'è ancora nessun elemento
@@ -224,39 +206,31 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
      * chiamare quando this.size diventa maggiore di getCurrentThreshold()
      */
     private void resize() {
-        // TODO implementare
+        // Creazione nuova hashTable
         CollisionListResizableHashTable<E> newHashTable = new CollisionListResizableHashTable<E>(phf);
         newHashTable.table = new Object[this.getCurrentCapacity()*2];
 
+        // Passaggio dati da hasTable vecchia -> hasTable nuova
         Iterator<E> iterator = new Itr();
         while (iterator.hasNext()) {
             newHashTable.add(iterator.next());
         }
 
+        // Cambio puntatore table da hashTable vecchia a hashTable nuova
         this.table = newHashTable.table;
         this.modCount++;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object o) {
-        // TODO implementare
-        /*
-         * ATTENZIONE: usare l'hashCode dell'oggetto e la funzione di hash
-         * primaria passata all'atto della creazione: il bucket in cui cercare
-         * l'oggetto o è la posizione
-         * this.phf.hash(o.hashCode(),this.getCurrentCapacity)
-         * 
-         * In questa posizione, se non vuota, si deve cercare l'elemento o
-         * utilizzando il metodo equals() su tutti gli elementi della lista
-         * concatenata lì presente. Se presente, l'elemento deve essere
-         * eliminato dalla lista concatenata
-         * 
-         */
-        // ATTENZIONE: la rimozione, in questa implementazione, **non** comporta
-        // mai una resize "al ribasso", cioè un dimezzamento della tabella se si
-        // scende sotto il fattore di bilanciamento desiderato.
+        if(o == null)
+            throw new NullPointerException("Elemento passato è null!");
 
+        // chiave per oggetto o
         int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
+
+        // Se nella key non c'è nessun elemento, allora l'oggetto non esiste
         if(this.table[key] == null)
             return false;
         
@@ -266,9 +240,9 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
         // Ricerca nodo da eliminare
         while (node != null) {
-            // Trovato item
+            // Trovato elemento da eliminare
             if(node.item.equals(o)) {
-                // Se item si trova nella prima posizione della lista, allora sposto il puntatore in avanti
+                // Se elemento si trova nella prima posizione della lista, allora sposto il puntatore in avanti
                 if(previousNode == null)
                     table[key] = node.next;
                 
@@ -289,31 +263,32 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         return false;
     }
 
-    @Override
+    @Override 
     public boolean containsAll(Collection<?> c) {
-        // TODO implementare
-        // utilizzare un iteratore della collection e chiamare il metodo
-        // contains
         if(c == null)
             throw new NullPointerException("Collection passata è null!");
 
+        // Creazione iteratore collection
         Iterator<?> iterator = c.iterator();
+
+        // Controllo che la hashTable contiene tutti gli elementi
         while (iterator.hasNext()) {
-            if(!this.contains(iterator.next()));
+            if(!this.contains(iterator.next())) 
                 return false;
         }
 
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        // TODO implementare
-        // utilizzare un iteratore della collection e chiamare il metodo add
         if(c == null)
             throw new NullPointerException("Collection passato null!");
-            
+
+        // Creazione iteratore collection
         Iterator<?> iterator = c.iterator();
+        // Aggiunta elementi alla hashTable
         while (iterator.hasNext()) {
             this.add((E) iterator.next());
         }
@@ -328,9 +303,12 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        // TODO implementare
-        // utilizzare un iteratore della collection e chiamare il metodo remove
+        if(c == null)
+            throw new NullPointerException("Collection passata è null!");
+
+        // Creazione iteratore collection
         Iterator<?> iterator = c.iterator();
+        // Remove di tutti elementi elencati dalla collection
         while (iterator.hasNext()) {
             this.remove(iterator.next());
         }
@@ -375,15 +353,14 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
      */
     private class Itr implements Iterator<E> {
 
-        // TODO inserire le variabili che servono
-
         private int numeroModificheAtteso;
 
+        // lastKey serve a mantenere l'ultima chiave visitata
         private int lastKey;
+        // lastReturnedNode serve a mantenere l'ultimo nodo visitato
         private Node<E> lastReturnedNode;
 
         private Itr() {
-            // TODO implementare il resto
             this.numeroModificheAtteso = modCount;
             this.lastKey = -1;
             this.lastReturnedNode = null;
@@ -391,12 +368,11 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
         @Override
         public boolean hasNext() {
-            // TODO implementare
-
             // Vedo se dopo l'ultimo nodo controllato esiste un altro nodo
             if(this.lastReturnedNode != null && this.lastReturnedNode.next != null)
                 return true;
 
+            // Raggiunta fine della hashTable
             if(lastKey+1 == table.length)
                 return false;
 
@@ -410,10 +386,9 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public E next() {
-            // TODO implementare
-
             // Controllo concorrenza
             if(modCount != this.numeroModificheAtteso)
                 throw new ConcurrentModificationException("Modifica hash table durante iteratore!");
