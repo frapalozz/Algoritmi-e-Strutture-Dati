@@ -131,10 +131,6 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         // Ottieni chiave per elemento o
         int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
 
-        // Se la tabella nella chiave key è vuota allora l'oggetto cercato non è presente
-        if(table[key] == null)
-            return false;
-
         // Ricerca oggetto in key
         Node<E> node = (Node<E>) table[key];
         while (node != null) {
@@ -143,7 +139,7 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
             node = node.next;
         }
         
-        // Oggetto non trovato
+        // Oggetto non presente
         return false;
     }
 
@@ -170,27 +166,13 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
         // chiave per oggetto e
         int key = this.phf.hash(e.hashCode(), this.getCurrentCapacity());
-
-        // Controlla se nella posizione key non c'è ancora nessun elemento
-        if(this.table[key] == null){
-            this.table[key] = new Node<E>(e, null);
-            this.size++;
-
-            // Resize se necessario
-            if(this.size > this.getCurrentThreshold())
-                this.resize();
-
-            this.modCount++;
-            return true;
-        }
         
         // Controlla se la posizione k contiene già questo elemento
         if(this.contains(e))
             return false;
 
         // Crea il nuovo nodo e lo aggiungo alla posizione k
-        Node<E> nuovoElemento = new Node<E>(e, (Node<E>)this.table[key]);
-        this.table[key] = nuovoElemento;
+        this.table[key] = new Node<E>(e, (Node<E>)this.table[key]);
         this.size++;
 
         // Resize se necessario
@@ -229,10 +211,6 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
 
         // chiave per oggetto o
         int key = this.phf.hash(o.hashCode(), this.getCurrentCapacity());
-
-        // Se nella key non c'è nessun elemento, allora l'oggetto non esiste
-        if(this.table[key] == null)
-            return false;
         
         // Creo nodo e nodo precedente
         Node<E> node = (Node<E>) table[key];
@@ -268,29 +246,23 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         if(c == null)
             throw new NullPointerException("Collection passata è null!");
 
-        // Creazione iteratore collection
-        Iterator<?> iterator = c.iterator();
-
         // Controllo che la hashTable contiene tutti gli elementi
-        while (iterator.hasNext()) {
-            if(!this.contains(iterator.next())) 
+        for (Object element : c) {
+            if(!this.contains(element))
                 return false;
         }
 
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean addAll(Collection<? extends E> c) {
         if(c == null)
             throw new NullPointerException("Collection passato null!");
 
-        // Creazione iteratore collection
-        Iterator<?> iterator = c.iterator();
         // Aggiunta elementi alla hashTable
-        while (iterator.hasNext()) {
-            this.add((E) iterator.next());
+        for (E element : c) {
+            this.add(element);
         }
         
         return true;
@@ -306,11 +278,9 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
         if(c == null)
             throw new NullPointerException("Collection passata è null!");
 
-        // Creazione iteratore collection
-        Iterator<?> iterator = c.iterator();
         // Remove di tutti elementi elencati dalla collection
-        while (iterator.hasNext()) {
-            this.remove(iterator.next());
+        for (Object element : c) {
+            this.remove(element);
         }
 
         return true;
@@ -373,11 +343,11 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
                 return true;
 
             // Raggiunta fine della hashTable
-            if(lastKey+1 == table.length)
+            if(lastKey+1 >= getCurrentCapacity())
                 return false;
 
             // Se non è ancora stato controllato nessun nodo o lastReturnedNode.next == null allora cerco una key che contiene almeno 1 nodo
-            for(int i = lastKey+1; i < table.length; i++) {
+            for(int i = lastKey+1; i < getCurrentCapacity(); i++) {
                 if(table[i] != null)
                     return true;
             }
@@ -405,7 +375,7 @@ public class CollisionListResizableHashTable<E> implements Set<E> {
             }
 
             // Se non è ancora stato controllato nessun nodo o lastReturnedNode.next == null allora cerco una key che contiene almeno 1 nodo
-            for(int i = lastKey+1; i < table.length; i++){
+            for(int i = lastKey+1; i < getCurrentCapacity(); i++){
                 if(table[i] != null)
                     lastKey = i;
             }
