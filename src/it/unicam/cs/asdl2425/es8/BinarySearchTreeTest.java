@@ -18,6 +18,7 @@ class BinarySearchTreeTest {
 
 	@Test
 	void testBinarySearchTreeShouldNotThrow() {
+		@SuppressWarnings("unused")
 		BinarySearchTree<Integer> bst = null;
 		assertDoesNotThrow(() -> {
 			new BinarySearchTree<>(42);
@@ -26,6 +27,7 @@ class BinarySearchTreeTest {
 	
 	@Test
 	void testBinarySearchTreeShouldThrow() {
+		@SuppressWarnings("unused")
 		BinarySearchTree<Integer> bst = null;
 		assertThrows(NullPointerException.class, () -> {
 			new BinarySearchTree<>(null);
@@ -104,7 +106,7 @@ class BinarySearchTreeTest {
 		BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>();
 		bst.add(42);
 		int h = bst.getHeight();
-		assertEquals(h, 0);
+		assertEquals(0, h);
 	}
 	
 	@Test
@@ -118,7 +120,7 @@ class BinarySearchTreeTest {
 		bst.add(4);
 		bst.add(6);
 		int h = bst.getHeight();
-		assertEquals(h, 3);
+		assertEquals(3, h);
 	}
 
 	@Test
@@ -134,7 +136,7 @@ class BinarySearchTreeTest {
 		List<Integer> labels = new ArrayList<Integer>();
 		bst.addOrderedLabelsTo(labels);
 		List<Integer> true_labels = Arrays.asList(new Integer[] {1,2,3,4,5,6,7});
-		assertEquals(labels, true_labels);
+		assertEquals(true_labels, labels);
 	}
 	
 	@Test
@@ -164,7 +166,7 @@ class BinarySearchTreeTest {
 		bst.add(6);
 		List<Integer> labels = bst.getOrderedLabels();
 		List<Integer> true_labels = Arrays.asList(new Integer[] {1,2,3,4,5,6,7});
-		assertEquals(labels, true_labels);
+		assertEquals(true_labels, labels);
 	}
 	
 	@Test
@@ -320,7 +322,7 @@ class BinarySearchTreeTest {
 		bst.add(4);
 		bst.add(6);
 		int pred = bst.getPredecessor(6);
-		assertEquals(pred, 5);
+		assertEquals(5, pred);
 	}
 	
 	@Test

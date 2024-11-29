@@ -442,8 +442,18 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * @return la lunghezza del massimo cammino da questo nodo a una foglia.
          */
         protected int computeHeight() {
-            // TODO implementare ricorsivamente
-            return -1;
+            // Caso base
+            // Nessun figlio, quindi altezza 0
+            if(this.getRight() == null && this.getLeft() == null)
+                return 0;
+
+            // Caso ricorsivo
+            // Sia figlio destra che sinistro, prendo il valore massimo tra strada destra e sinistra
+            if(this.getRight() != null && this.getLeft() != null)
+                return Math.max(this.getRight().computeHeight()+1, this.getLeft().computeHeight()+1);
+
+            // Vado solo nel figlio presente
+            return (this.getRight() != null)? this.getRight().computeHeight()+1 : this.getLeft().computeHeight()+1;
         }
 
         /*
@@ -456,8 +466,30 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * l'etichetta era già presente.
          */
         protected boolean insert(E label) {
-            // TODO implementare ricorsivamente
-            return false;
+            // Caso base
+            // Elemento già presente
+            if(label.compareTo(this.getLabel()) == 0)
+                return false;
+
+            // Caso ricorsivo
+            // Elemento più piccolo del seguente nodo
+            if(label.compareTo(this.getLabel()) < 0)
+                // Se il figlio destro non è nullo allora inserisco ricorsivmanete in lui, altrimenti inserisco il nuovo nodo
+                return (this.getLeft() != null)? this.getLeft().insert(label): insertNode(label, this, false);
+
+            // Elemento più grande del seguente nodo
+            return (this.getRight() != null)? this.getRight().insert(label): insertNode(label, this, true);
+        }
+
+        /*
+         * Aggiunge un nodo alla position (false: sinistra, true: destra) al nodo node
+         */
+        protected boolean insertNode(E label, RecBST node, boolean position){
+            if(position)
+                node.setRight(new RecBST(label, null, null, node));
+            else 
+                node.setLeft(new RecBST(label, null, null, node));
+            return true;
         }
 
         /*
@@ -469,8 +501,18 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * null se l'etichetta non è presente
          */
         protected RecBST search(E label) {
-            // TODO implementare ricorsivamente
-            return null;
+            // Caso base
+            // Il seguente nodo è quello cercato
+            if(label.compareTo(this.getLabel()) == 0)
+                return this;
+
+            // Caso ricorsivo
+            // Se l'elemento è più piccolo del nodo corrente cerca a sinistra
+            if(label.compareTo(this.getLabel()) < 0)
+                return (this.getLeft() == null)? null : this.getLeft().search(label);
+
+            // Se l'elemento è più grande del nodo corrente cerca a destra
+            return (this.getRight() == null)? null : this.getRight().search(label);
         }
 
         /*
@@ -482,7 +524,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * etichette in ordine
          */
         protected void addLabelsInOrder(List<E> l) {
-            // TODO implementare ricorsivamente
+            l.addAll(this.inOrderVisit());
         }
 
         /*
@@ -494,8 +536,17 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * (sotto-)albero secondo l'ordinamento naturale della classe {@code E}
          */
         protected List<E> inOrderVisit() {
-            // TODO implementare ricorsivamente
-            return null;
+            List<E> lista = new ArrayList<>();
+                
+            if(this.getLeft() != null)
+                lista.addAll(this.getLeft().inOrderVisit());
+
+            lista.add(this.getLabel());
+
+            if(this.getRight() != null)
+                lista.addAll(this.getRight().inOrderVisit());
+            
+            return lista;
         }
 
         /*
@@ -506,8 +557,14 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * questo (sotto-)albero
          */
         protected RecBST getMinNode() {
-            // TODO implementare ricorsivamente
-            return null;
+            // Caso base
+            // Il seguente nodo non ha nodi figli più piccoli
+            if(this.getLeft() == null)
+                return this;
+            
+            // Caso ricorsivo
+            // Il seguente nodo ha nodi figli più piccoli
+            return this.getLeft().getMinNode();
         }
 
         /*
@@ -518,8 +575,14 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * questo (sotto-)albero
          */
         protected RecBST getMaxNode() {
-            // TODO implementare ricorsivamente
-            return null;
+            // Caso base
+            // Il seguente nodo non ha nodi figli più grandu
+            if(this.getRight() == null)
+                return this;
+
+            // Caso ricorsivo
+            // Il seguente nodo ha nodi figli più grandi
+            return this.getRight().getMaxNode();
         }
 
         /*
@@ -531,8 +594,18 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * non ha successore
          */
         protected RecBST getSuccessorNode() {
-            // TODO implementare
-            return null;
+            // Cerca successore nel sottoalbero destro
+            if(this.getRight() != null)
+                return this.getRight().getMinNode();
+
+            // Cerca successore nei parents
+            RecBST y = this.getParent();
+            RecBST x = this;
+            while(y != null && x == y.getRight()){
+                x = y;
+                y = x.getParent();
+            }
+            return y;
         }
 
         /*
@@ -544,8 +617,19 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * non ha predecessore
          */
         protected RecBST getPredecessorNode() {
-            // TODO implementare
-            return null;
+            // Cerca predecessore nel sottoalbero sinistro
+            if(this.getLeft() != null)
+                return this.getLeft().getMaxNode();
+
+            // Cerca predecessore nei parents
+            RecBST y = this.getParent();
+            RecBST x = this;
+            while(y != null && x == y.getLeft()){
+                x = y;
+                y = y.getParent();
+            }
+
+            return y;
         }
 
         /*
@@ -556,6 +640,8 @@ public class BinarySearchTree<E extends Comparable<E>> {
          */
         protected void deleteSelfLabel() {
             // TODO implementare
+                
+
         }
     }
 }
