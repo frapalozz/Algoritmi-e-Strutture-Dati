@@ -127,16 +127,18 @@ public interface ADTConsList<E> {
      *         {@code element} sono state cancellate.
      */
     default ADTConsList<E> removeAll(E element) {
-        // TODO implementare ricorsivamente
-
         // Caso base
         if (this.isEmpty())
             return this;
+
         // Caso ricorsivo
+        // Se l'elemento da eliminare è il primo della lista, allora ritorno la coda rimuovendo da essa altre ripetizioni dell'elemento da eliminare
         if (this.first().equals(element))
             return this.rest().removeAll(element);
+
+        // Se l'elemento da eliminare non è il primo della lista, allora separo il primo elemento dalla coda, nella coda rimuovo gli elementi da eliminare e infine riaggiungo il primo elemento della lista.
         else
-            return this.rest().removeFirst(element).removeAll(element).cons(this.first());
+            return this.rest().removeAll(element).cons(this.first());
     }
 
     /**
@@ -153,14 +155,16 @@ public interface ADTConsList<E> {
      *         {@code newElement}
      */
     default ADTConsList<E> updateFirst(E element, E newElement) {
-        // TODO implementare ricorsivamente
-
         // Caso base
         if (this.isEmpty())
             return this;
+
         // Caso ricorsivo
+        // Se il primo elemento della lista è quello da modificare, allora ritorno la coda e ci aggiungo alla testa il nuovo elemento
         if(this.first().equals(element))
             return this.rest().cons(newElement);
+
+        // Se l'elemento da modificare è nella coda, allora separo la testa dalla coda, nella coda vado ricorsivamente ad aggiornare l'elemento, ed infine riunisco la testa alla coda
         else 
             return this.rest().updateFirst(element, newElement).cons(this.first());
     }
@@ -179,16 +183,17 @@ public interface ADTConsList<E> {
      *         {@code newElement}
      */
     default ADTConsList<E> updateAll(E element, E newElement) {
-        // TODO implementare ricorsivamente
-
         // Caso base
         if (this.isEmpty())
             return this;
+
         // Caso ricorsivo
+        // Se l'elemento da modificare è in testa alla lista, allora alla coda della lista ci aggiungo in testa il nuovo elemento, e vado ad aggiornare ricorsivamente tutti gli altri elementi nella coda
         if (this.first().equals(element))
             return this.rest().updateAll(element, newElement).cons(newElement);
+        // Se l'elemento da modificare non è in testa alla lista, allora separo la testa dalla coda, nella coda eseguo gli aggiornamenti ricorsivamente, ed infine riunisco la testa alla coda
         else
-            return this.rest().updateFirst(element, newElement).updateAll(element, newElement).cons(this.first());
+            return this.rest().updateAll(element, newElement).cons(this.first());
     }
 
     /**
@@ -200,12 +205,13 @@ public interface ADTConsList<E> {
      *         elementi di {@code list}.
      */
     default ADTConsList<E> append(ADTConsList<E> list) {
-        // TODO implementare ricorsivamente
-
         // Caso base
+        // Se la lista, in cui appendere la nuova lista, è vuota allora ritorno la lista da appendere
         if(this.isEmpty())
             return list;
+
         // Caso ricorsivo
+        // Se la lista attuale non è vuota, allora separo la testa dalla coda, nella coda appendo ricorsivamente la lista ed infine riunisco la testa in cima
         return this.rest().append(list).cons(this.first());
     }
 
@@ -218,12 +224,13 @@ public interface ADTConsList<E> {
      */
     @SuppressWarnings("unchecked")
     default ADTConsList<E> reverse() {
-        // TODO implementare ricorsivamente
-
         // Caso base
-        if(this.isEmpty())
+        // Se la lista contiene un solo elemento, allora ritorno la lista (non c'è bisogno di invertirla)
+        if(this.rest().isEmpty())
             return this;
+
         // Caso ricorsivo
+        // Se la lista non è composta da un solo elemento, allora separo la testa dalla coda, eseguo ricorsivamente il reverse della coda e alla lista risultante ci appendo la testa
         return this.rest().reverse().append(EMPTY_LIST.cons(this.first()));
     }
 
