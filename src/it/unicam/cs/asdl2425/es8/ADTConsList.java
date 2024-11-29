@@ -128,7 +128,15 @@ public interface ADTConsList<E> {
      */
     default ADTConsList<E> removeAll(E element) {
         // TODO implementare ricorsivamente
-        return null;
+
+        // Caso base
+        if (this.isEmpty())
+            return this;
+        // Caso ricorsivo
+        if (this.first().equals(element))
+            return this.rest().removeAll(element);
+        else
+            return this.rest().removeFirst(element).removeAll(element).cons(this.first());
     }
 
     /**
@@ -146,7 +154,15 @@ public interface ADTConsList<E> {
      */
     default ADTConsList<E> updateFirst(E element, E newElement) {
         // TODO implementare ricorsivamente
-        return null;
+
+        // Caso base
+        if (this.isEmpty())
+            return this;
+        // Caso ricorsivo
+        if(this.first().equals(element))
+            return this.rest().cons(newElement);
+        else 
+            return this.rest().updateFirst(element, newElement).cons(this.first());
     }
 
     /**
@@ -164,7 +180,15 @@ public interface ADTConsList<E> {
      */
     default ADTConsList<E> updateAll(E element, E newElement) {
         // TODO implementare ricorsivamente
-        return null;
+
+        // Caso base
+        if (this.isEmpty())
+            return this;
+        // Caso ricorsivo
+        if (this.first().equals(element))
+            return this.rest().updateAll(element, newElement).cons(newElement);
+        else
+            return this.rest().updateFirst(element, newElement).updateAll(element, newElement).cons(this.first());
     }
 
     /**
@@ -177,7 +201,12 @@ public interface ADTConsList<E> {
      */
     default ADTConsList<E> append(ADTConsList<E> list) {
         // TODO implementare ricorsivamente
-        return null;
+
+        // Caso base
+        if(this.isEmpty())
+            return list;
+        // Caso ricorsivo
+        return this.rest().append(list).cons(this.first());
     }
 
     /**
@@ -190,7 +219,12 @@ public interface ADTConsList<E> {
     @SuppressWarnings("unchecked")
     default ADTConsList<E> reverse() {
         // TODO implementare ricorsivamente
-        return null;
+
+        // Caso base
+        if(this.isEmpty())
+            return this;
+        // Caso ricorsivo
+        return this.rest().reverse().append(EMPTY_LIST.cons(this.first()));
     }
 
 }
