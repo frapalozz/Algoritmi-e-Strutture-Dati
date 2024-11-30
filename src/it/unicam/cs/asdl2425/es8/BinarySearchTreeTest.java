@@ -271,6 +271,8 @@ class BinarySearchTreeTest {
 		bst.add(6);
 		int succ = bst.getSuccessor(3);
 		assertEquals(succ, 4);
+		succ = bst.getSuccessor(6);
+		assertEquals(7, succ);
 	}
 	
 	@Test
@@ -323,6 +325,8 @@ class BinarySearchTreeTest {
 		bst.add(6);
 		int pred = bst.getPredecessor(6);
 		assertEquals(5, pred);
+		pred = bst.getPredecessor(5);
+		assertEquals(4, pred);
 	}
 	
 	@Test
@@ -431,7 +435,6 @@ class BinarySearchTreeTest {
 		labels = bst.getOrderedLabels();
 		true_labels = Arrays.asList(new Integer[] {1,3,6,10});
 		assertEquals(true_labels, labels);
-
 	}
 	
 	@Test

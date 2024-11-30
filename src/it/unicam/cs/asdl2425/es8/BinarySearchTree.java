@@ -1,9 +1,7 @@
 package it.unicam.cs.asdl2425.es8;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Un oggetto di questa classe rappresenta un binary search tree, cioè un albero
@@ -639,37 +637,37 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * Cfr. slides di teoria.
          */
         protected void deleteSelfLabel() {
-            // TODO implementare
-            RecBST y = null;
+            RecBST temp = null;
 
-            // Controlla se ci ha entrambe i figli
+            // Caso 1: ha due figli
             if(this.getLeft() != null && this.getRight() != null){
                 // Trova il successore
-                y = this.getSuccessorNode();
+                temp = this.getSuccessorNode();
 
                 // Copia il valore del successore nel nodo corrente
-                this.setLabel(y.getLabel());
+                this.setLabel(temp.getLabel());
 
                 // Elimina il successore
-                y.deleteSelfLabel();
+                temp.deleteSelfLabel();
             }
 
+            // Caso 2: ha al più 1 figlio
             else if(size() > 1){
                 // Prendi il nodo figlio, o null se non ha figli
-                y = (this.getLeft() != null)? this.getLeft() : this.getRight();
+                temp = (this.getLeft() != null)? this.getLeft() : this.getRight();
 
                 // Sostituisci se stesso con il suo figlio
                 if(this.getParent().getLeft() == this)
-                    this.getParent().setLeft(y); 
+                    this.getParent().setLeft(temp); 
                 else 
-                    this.getParent().setRight(y);
+                    this.getParent().setRight(temp);
 
                 // Assegna al figlio di this il suo nuovo padre
-                if(y != null)
-                    y.setParent(this.getParent());
+                if(temp != null)
+                    temp.setParent(this.getParent());
             }
-            
-            // Solo 1 nodo
+
+            // Caso 3: l'albero è composto da solamente questo nodo
             else{
                 BinarySearchTree.this.root = null;
             }
