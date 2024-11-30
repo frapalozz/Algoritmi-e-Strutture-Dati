@@ -387,8 +387,51 @@ class BinarySearchTreeTest {
 	@Test
 	void testRemove() {
 		BinarySearchTree<Integer> bst = new BinarySearchTree<Integer>();
+		// Remove con solo 1 nodo nell'albero
 		bst.add(42);
 		assertTrue(bst.remove(42));
+		assertEquals(0, bst.size());
+
+		// Remove nodo con due figli
+		bst.add(2);
+		bst.add(5);
+		bst.add(7);
+		bst.add(1);
+		bst.add(3);
+		bst.add(4);
+		bst.add(6);
+		assertEquals(7, bst.size());
+		List<Integer> labels = bst.getOrderedLabels();
+		List<Integer> true_labels = Arrays.asList(new Integer[] {1,2,3,4,5,6,7});
+		assertEquals(true_labels, labels);
+
+		assertTrue(bst.remove(2));
+		assertEquals(6, bst.size());
+		labels = bst.getOrderedLabels();
+		true_labels = Arrays.asList(new Integer[] {1,3,4,5,6,7});
+		assertEquals(true_labels, labels);
+		
+		assertTrue(bst.remove(5));
+		assertEquals(5, bst.size());
+		labels = bst.getOrderedLabels();
+		true_labels = Arrays.asList(new Integer[] {1,3,4,6,7});
+		assertEquals(true_labels, labels);
+
+		// Remove nodo con un figlio
+		bst.add(10);
+		assertEquals(6, bst.size());
+		assertTrue(bst.remove(7));
+		assertEquals(5, bst.size());
+		labels = bst.getOrderedLabels();
+		true_labels = Arrays.asList(new Integer[] {1,3,4,6,10});
+		assertEquals(true_labels, labels);
+
+		// Remove nodo senza figli
+		assertTrue(bst.remove(4));
+		labels = bst.getOrderedLabels();
+		true_labels = Arrays.asList(new Integer[] {1,3,6,10});
+		assertEquals(true_labels, labels);
+
 	}
 	
 	@Test

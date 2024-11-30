@@ -640,8 +640,39 @@ public class BinarySearchTree<E extends Comparable<E>> {
          */
         protected void deleteSelfLabel() {
             // TODO implementare
-                
+            RecBST y = null;
 
+            // Controlla se ci ha entrambe i figli
+            if(this.getLeft() != null && this.getRight() != null){
+                // Trova il successore
+                y = this.getSuccessorNode();
+
+                // Copia il valore del successore nel nodo corrente
+                this.setLabel(y.getLabel());
+
+                // Elimina il successore
+                y.deleteSelfLabel();
+            }
+
+            else if(size() > 1){
+                // Prendi il nodo figlio, o null se non ha figli
+                y = (this.getLeft() != null)? this.getLeft() : this.getRight();
+
+                // Sostituisci se stesso con il suo figlio
+                if(this.getParent().getLeft() == this)
+                    this.getParent().setLeft(y); 
+                else 
+                    this.getParent().setRight(y);
+
+                // Assegna al figlio di this il suo nuovo padre
+                if(y != null)
+                    y.setParent(this.getParent());
+            }
+            
+            // Solo 1 nodo
+            else{
+                BinarySearchTree.this.root = null;
+            }
         }
     }
 }
