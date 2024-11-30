@@ -647,14 +647,19 @@ public class BinarySearchTree<E extends Comparable<E>> {
                 temp = (this.getLeft() != null)? this.getLeft() : this.getRight();
 
                 // Sostituisci se stesso con il suo figlio
-                if(this.getParent().getLeft() == this)
-                    this.getParent().setLeft(temp); 
-                else 
-                    this.getParent().setRight(temp);
-
-                // Assegna al figlio di this il suo nuovo padre
-                if(temp != null)
-                    temp.setParent(this.getParent());
+                if(BinarySearchTree.this.getRoot() == this){
+                    BinarySearchTree.this.root = temp;
+                    temp.setParent(null);
+                }
+                else {
+                    if(this.getParent().getLeft() == this)
+                        this.getParent().setLeft(temp); 
+                    else 
+                        this.getParent().setRight(temp);
+                    // Assegna al figlio di this il suo nuovo padre
+                    if(temp != null)
+                        temp.setParent(this.getParent());
+                }
             }
 
             // Caso 3: l'albero è composto da solamente questo nodo

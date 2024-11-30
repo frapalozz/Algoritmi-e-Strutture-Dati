@@ -435,6 +435,18 @@ class BinarySearchTreeTest {
 		labels = bst.getOrderedLabels();
 		true_labels = Arrays.asList(new Integer[] {1,3,6,10});
 		assertEquals(true_labels, labels);
+
+		BinarySearchTree<Integer> bst2 = new BinarySearchTree<Integer>();
+		bst2.add(6);
+		bst2.add(5);
+		bst2.add(4);
+		bst2.add(3);
+		bst2.add(2);
+
+		assertTrue(bst2.remove(6));
+		labels = bst2.getOrderedLabels();
+		true_labels = Arrays.asList(new Integer[] {2,3,4,5});
+		assertEquals(true_labels, labels);
 	}
 	
 	@Test
