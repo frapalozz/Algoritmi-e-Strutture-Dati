@@ -555,14 +555,9 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * questo (sotto-)albero
          */
         protected RecBST getMinNode() {
-            // Caso base
-            // Il seguente nodo non ha nodi figli più piccoli
-            if(this.getLeft() == null)
-                return this;
-            
-            // Caso ricorsivo
-            // Il seguente nodo ha nodi figli più piccoli
-            return this.getLeft().getMinNode();
+
+            // Se il seguente nodo non ha figli più piccoli, allora ritorna this, altrimenti cerca il nodo più piccolo del suo figlio sinistro
+            return (this.getLeft() == null)? this : this.getLeft().getMinNode();
         }
 
         /*
@@ -573,14 +568,9 @@ public class BinarySearchTree<E extends Comparable<E>> {
          * questo (sotto-)albero
          */
         protected RecBST getMaxNode() {
-            // Caso base
-            // Il seguente nodo non ha nodi figli più grandu
-            if(this.getRight() == null)
-                return this;
 
-            // Caso ricorsivo
-            // Il seguente nodo ha nodi figli più grandi
-            return this.getRight().getMaxNode();
+            // Se il seguente nodo non ha figli più grandi allora ritorna this, altrimenti vai a cercare il nodo più grande nel suo figlio destro
+            return (this.getRight() == null)? this : this.getRight().getMaxNode();
         }
 
         /*
