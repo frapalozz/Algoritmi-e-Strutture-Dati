@@ -76,12 +76,16 @@ public class MerkleProof {
      */
     public boolean addHash(String hash, boolean isLeft) {
         // TODO implementare
+
+        // La lista ha raggiunto la sua dimensione massima
         if(this.proof.getSize() == length)
             return false;
 
         if(isLeft)
+            // Aggiungi nodo alla testa della lista
             this.proof.addAtHead(new MerkleProofHash(hash, isLeft));
         else 
+            // Aggiungi nodo alla coda della lista
             this.proof.addAtTail(new MerkleProofHash(hash, isLeft));
         
         return true;
@@ -140,8 +144,13 @@ public class MerkleProof {
              * Due MerkleProofHash sono uguali se hanno lo stesso hash e lo
              * stesso flag isLeft
              */
-            return (obj instanceof MerkleProofHash)? 
-            ((MerkleProofHash) obj).toString().equals(this.toString()) : false;
+            // Se l'oggetto passato non è un MerkleProofHash allora ritorna false
+            if(!(obj instanceof MerkleProofHash))
+                return false;
+            
+            MerkleProofHash mph = (MerkleProofHash) obj;
+            // Controlla se hanno lo stesso hash e isLeft
+            return mph.getHash().equals(this.hash) && mph.isLeft() == this.isLeft;
 
         }
 
@@ -183,6 +192,7 @@ public class MerkleProof {
         if(data == null)
             throw new IllegalArgumentException("data null in proveValidityOfData()!");
         
+        // Controlla se il rootHash è uguale all'hash calcolato
         return computeHash(HashUtil.dataToHash(data)).equals(this.rootHash);
     }
 
@@ -204,18 +214,31 @@ public class MerkleProof {
         if(branch == null)
             throw new IllegalArgumentException("branch null in proveValidityOfBranch()!");
 
+        // Controlla se il rootHash è uguale all'hash calcolato
         return computeHash(branch.getHash()).equals(this.rootHash);
     }
 
     // TODO inserire eventuali metodi privati per fini di implementazione
 
+    /*
+     * Calcola l'hash combinato dato un valore hash iniziale.
+     * Il calcolo viene eseguito combinando l'hash passato con l'hash del primo oggetto MerkleProofHash
+     * in un nuovo hash, il risultato con il successivo e così via fino
+     * all'ultimo oggetto.
+     */
     private String computeHash(String hash){
-        String finalHash = hash;
+        // Stringa hash calcolata
+        String calculatedHash = hash;
         
-        for (MerkleProofHash merkleProofHash : proof) {
-            finalHash = HashUtil.computeMD5((finalHash + merkleProofHash.getHash()).getBytes());
+        // Iterazione nodi nella lista proof
+        for (MerkleProofHash merkleProofHash : this.proof) {
+            // Calcolo hash combinando l'ultimo hash calcolato con il successivo hash del seguente nodo MerkleProofHash
+            if(merkleProofHash.isLeft())
+                calculatedHash = HashUtil.computeMD5( (merkleProofHash.getHash() + calculatedHash).getBytes() );
+            else 
+                calculatedHash = HashUtil.computeMD5( ( calculatedHash + merkleProofHash.getHash()).getBytes() );
         }
 
-        return finalHash;
+        return calculatedHash;
     }
 }
