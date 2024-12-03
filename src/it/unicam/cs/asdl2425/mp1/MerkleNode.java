@@ -74,6 +74,7 @@ public class MerkleNode {
      */
     public boolean isLeaf() {
         // TODO implementare
+        // Se il nodo è una foglia allora non deve avere figli
         return this.left == null && this.right == null;
     }
 
@@ -90,7 +91,7 @@ public class MerkleNode {
 
         // Se l'oggetto passato è un MerkleNode, allora controlla se il suo hash è uguale a this.hash
         // Altrimenti ritorna false
-        return (obj instanceof MerkleNode)? this.hash.equals(((MerkleNode) obj).getHash()): false;
+        return (obj instanceof MerkleNode)? this.hash.equals( ((MerkleNode) obj).getHash() ) : false;
     }
 
     @Override
@@ -102,6 +103,6 @@ public class MerkleNode {
         int result = 1;
         long temp = this.hash.hashCode();
         
-        return result = prime * result + (int) (temp ^ (temp >>> 32));
+        return prime * result + (int) (temp ^ (temp >>> 32));
     }
 }
