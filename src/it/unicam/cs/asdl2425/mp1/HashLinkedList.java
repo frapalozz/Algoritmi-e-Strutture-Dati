@@ -5,8 +5,6 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import it.unicam.cs.asdl2425.es6.SingleLinkedList;
-
 //TODO inserire gli import della Java SE che si ritengono necessari
 
 /**
@@ -36,8 +34,7 @@ import it.unicam.cs.asdl2425.es6.SingleLinkedList;
  * @param <T>
  *                il tipo generico dei dati contenuti nei nodi della lista.
  * 
- * @author Luca Tesei, Marco Caputo (template) **INSERIRE NOME, COGNOME ED EMAIL
- *         xxxx@studenti.unicam.it DELLO STUDENTE** (implementazione)
+ * @author Luca Tesei, Marco Caputo, Francesco Palozzi francesco.palozzi@studenti.unicam.it
  * 
  */
 public class HashLinkedList<T> implements Iterable<T> {
