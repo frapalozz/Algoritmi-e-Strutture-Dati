@@ -76,7 +76,15 @@ public class MerkleProof {
      */
     public boolean addHash(String hash, boolean isLeft) {
         // TODO implementare
-        return false;
+        if(this.proof.getSize() == length)
+            return false;
+
+        if(isLeft)
+            this.proof.addAtHead(new MerkleProofHash(hash, isLeft));
+        else 
+            this.proof.addAtTail(new MerkleProofHash(hash, isLeft));
+        
+        return true;
     }
 
     /**
@@ -132,7 +140,8 @@ public class MerkleProof {
              * Due MerkleProofHash sono uguali se hanno lo stesso hash e lo
              * stesso flag isLeft
              */
-            return false;
+            return (obj instanceof MerkleProofHash)? 
+            ((MerkleProofHash) obj).toString().equals(this.toString()) : false;
 
         }
 
@@ -148,7 +157,11 @@ public class MerkleProof {
             /*
              * Implementare in accordo a equals
              */
-            return -1;
+            final int prime = 31;
+            int result = 1;
+            long temp = this.toString().hashCode();
+
+            return  prime * result + (int) (temp ^ (temp >>> 32));
         }
     }
 
@@ -167,7 +180,10 @@ public class MerkleProof {
      */
     public boolean proveValidityOfData(Object data) {
         // TODO implementare
-        return false;
+        if(data == null)
+            throw new IllegalArgumentException("data null in proveValidityOfData()!");
+        
+        return computeHash(HashUtil.dataToHash(data)).equals(this.rootHash);
     }
 
     /**
@@ -185,9 +201,21 @@ public class MerkleProof {
      */
     public boolean proveValidityOfBranch(MerkleNode branch) {
         // TODO implementare
-        return false;
+        if(branch == null)
+            throw new IllegalArgumentException("branch null in proveValidityOfBranch()!");
+
+        return computeHash(branch.getHash()).equals(this.rootHash);
     }
 
     // TODO inserire eventuali metodi privati per fini di implementazione
 
+    private String computeHash(String hash){
+        String finalHash = hash;
+        
+        for (MerkleProofHash merkleProofHash : proof) {
+            finalHash = HashUtil.computeMD5((finalHash + merkleProofHash.getHash()).getBytes());
+        }
+
+        return finalHash;
+    }
 }
