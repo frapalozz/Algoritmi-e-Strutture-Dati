@@ -98,6 +98,7 @@ public class HashLinkedList<T> implements Iterable<T> {
             this.head = newNode;
             this.tail = newNode;
         }
+        // Se la lista non è vuota allora sostituisco la head con il nuovo nodo
         else{
             newNode.next = this.head;
             this.head = newNode;
@@ -123,7 +124,9 @@ public class HashLinkedList<T> implements Iterable<T> {
         if(this.size == 0){
             this.head = newNode;
             this.tail = newNode;
-        }else {
+        }
+        // Se la lista non è vuota allora sostituisco la tail con il nuovo nodo
+        else {
             this.tail.next = newNode;
             this.tail = newNode;
         }
@@ -143,8 +146,12 @@ public class HashLinkedList<T> implements Iterable<T> {
         ArrayList<String> arrayHashes = new ArrayList<>();
         Node node = HashLinkedList.this.head;
 
+        // Iterazione su tutti i nodi della lista
         while (node != null) {
+            // Inserimento hash del nodo nel ArrayList
             arrayHashes.add(node.hash);
+            
+            // Puntatore node al nodo seguente
             node = node.next;
         }
 
@@ -167,14 +174,17 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public String buildNodesString() {
         // TODO implementare
+
+        // Creazione stringBuffer
         StringBuffer nodesString = new StringBuffer();
         Node node = this.head;
 
+        // Iterazione sui nodi della lista
         while (node != null) {
             // Crea il testo del seguente nodo e lo aggiunge alla stringa nodesString
             nodesString.append("Dato: " + node.data + ", Hash: " + node.hash + "\n");
 
-            // Sposta il puntatore al nodo successivo
+            // Puntatore node al nodo seguente
             node = node.next;
         }
 
@@ -190,14 +200,15 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public boolean remove(T data) {
         // TODO implementare
+
+        // lista vuota
+        if(this.size == 0) 
+            return false;
+
         Node currentNode = this.head;
         Node previousNode = currentNode;
 
-        if(this.size == 0) 
-            return false;
-        
-
-        // Controlla se uguale a Head
+        // Controlla se data è in testa alla lista
         if(this.head.data.equals(data)) {
             if(this.size == 1) {
                 this.head = null;
@@ -212,7 +223,7 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         currentNode = currentNode.next;
 
-        // Cerca elemento dentro linkedList
+        // Cerca elemento dentro HashLinkedList
         while (currentNode != null) {
 
             if(currentNode.data.equals(data)) {
@@ -249,6 +260,7 @@ public class HashLinkedList<T> implements Iterable<T> {
     private class Itr implements Iterator<T> {
 
         // TODO inserire le variabili istanza che si ritengono necessarie
+
         private int expectedModCount;
         private Node lastReturnedNode;
 
@@ -265,10 +277,10 @@ public class HashLinkedList<T> implements Iterable<T> {
             // TODO implementare
 
             if (this.lastReturnedNode == null)
-                // sono all'inizio dell'iterazione
+                // sono all'inizio dell'iterazione, quindi controllo se la lista ha una testa
                 return HashLinkedList.this.head != null;
             else
-                // almeno un next è stato fatto quindi vedo se esiste il prossimo nodo
+                // Vedo se esiste il nodo successivo
                 return this.lastReturnedNode.next != null;
         }
 
@@ -286,13 +298,13 @@ public class HashLinkedList<T> implements Iterable<T> {
                 throw new NoSuchElementException(
                         "Richiesta di next quando hasNext è falso");
             // c'è sicuramente un elemento di cui fare next
-            // aggiorno lastReturned e restituisco l'elemento next
+            // aggiorno lastReturnedNode e restituisco l'elemento successivo
             if (this.lastReturnedNode == null) {
                 // sono all’inizio e la lista non è vuota
                 this.lastReturnedNode = HashLinkedList.this.head;
                 return this.lastReturnedNode.data;
             } else {
-                // non sono all’inizio, ma c’è ancora qualcuno
+                // non sono all’inizio, ma c’è ancora un altro nodo
                 this.lastReturnedNode = this.lastReturnedNode.next;
                 return this.lastReturnedNode.data;
             }
