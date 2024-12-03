@@ -1,7 +1,11 @@
 package it.unicam.cs.asdl2425.mp1;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import it.unicam.cs.asdl2425.es6.SingleLinkedList;
 
 //TODO inserire gli import della Java SE che si ritengono necessari
 
@@ -88,6 +92,22 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public void addAtHead(T data) {
         // TODO implementare
+
+        // Creazione nodo da aggiungere
+        Node newNode = new Node(data);
+
+        // Se la lista è vuota allora crea coda e testa
+        if(this.size == 0){
+            this.head = newNode;
+            this.tail = newNode;
+        }
+        else{
+            newNode.next = this.head;
+            this.head = newNode;
+        }
+
+        this.size++;
+        this.numeroModifiche++;
     }
 
     /**
@@ -98,6 +118,21 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public void addAtTail(T data) {
         // TODO implementare
+
+        // Creazione nodo da aggiungere
+        Node newNode = new Node(data);
+
+        // Se la lista è vuota allora crea coda e testa
+        if(this.size == 0){
+            this.head = newNode;
+            this.tail = newNode;
+        }else {
+            this.tail.next = newNode;
+            this.tail = newNode;
+        }
+
+        this.size++;
+        this.numeroModifiche++;
     }
 
     /**
@@ -107,7 +142,16 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public ArrayList<String> getAllHashes() {
         // TODO implementare
-        return null;
+
+        ArrayList<String> arrayHashes = new ArrayList<>();
+        Node node = HashLinkedList.this.head;
+
+        while (node != null) {
+            arrayHashes.add(node.hash);
+            node = node.next;
+        }
+
+        return arrayHashes;
     }
 
     /**
@@ -126,7 +170,18 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public String buildNodesString() {
         // TODO implementare
-        return null;
+        StringBuffer nodesString = new StringBuffer();
+        Node node = this.head;
+
+        while (node != null) {
+            // Crea il testo del seguente nodo e lo aggiunge alla stringa nodesString
+            nodesString.append("Dato: " + node.data + ", Hash: " + node.hash + "\n");
+
+            // Sposta il puntatore al nodo successivo
+            node = node.next;
+        }
+
+        return nodesString.toString();
     }
 
     /**
@@ -138,6 +193,51 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     public boolean remove(T data) {
         // TODO implementare
+        Node currentNode = this.head;
+        Node previousNode = currentNode;
+
+        if(this.size == 0) 
+            return false;
+        
+
+        // Controlla se uguale a Head
+        if(this.head.data.equals(data)) {
+            if(this.size == 1) {
+                this.head = null;
+                this.tail = null;
+            }
+            else this.head = currentNode.next;
+            
+            this.numeroModifiche++;
+            this.size--;
+            return true;
+        }
+
+        currentNode = currentNode.next;
+
+        // Cerca elemento dentro linkedList
+        while (currentNode != null) {
+
+            if(currentNode.data.equals(data)) {
+                
+                // Se siamo nella coda
+                if(currentNode.next == null) {
+                    previousNode.next = null;
+                    this.tail = previousNode;
+                }
+                // Se non siamo nella coda
+                else 
+                    previousNode.next = currentNode.next;
+
+                this.numeroModifiche++;
+                this.size--;
+                return true;
+            }
+
+            previousNode = currentNode;
+            currentNode = currentNode.next;
+        }
+    
         return false;
     }
 
@@ -152,21 +252,53 @@ public class HashLinkedList<T> implements Iterable<T> {
     private class Itr implements Iterator<T> {
 
         // TODO inserire le variabili istanza che si ritengono necessarie
+        private int expectedModCount;
+        private Node lastReturnedNode;
 
         private Itr() {
             // TODO implementare
+
+            // Setup numero modifiche per fail-fast
+            this.expectedModCount = HashLinkedList.this.numeroModifiche;
+            this.lastReturnedNode = null;
         }
 
         @Override
         public boolean hasNext() {
             // TODO implementare
-            return false;
+
+            if (this.lastReturnedNode == null)
+                // sono all'inizio dell'iterazione
+                return HashLinkedList.this.head != null;
+            else
+                // almeno un next è stato fatto quindi vedo se esiste il prossimo nodo
+                return this.lastReturnedNode.next != null;
         }
 
         @Override
         public T next() {
             // TODO implementare
-            return null;
+
+            // controllo concorrenza
+            if (this.expectedModCount != HashLinkedList.this.numeroModifiche) {
+                throw new ConcurrentModificationException(
+                        "Lista modificata durante l'iterazione");
+            }
+            // controllo hasNext()
+            if (!hasNext())
+                throw new NoSuchElementException(
+                        "Richiesta di next quando hasNext è falso");
+            // c'è sicuramente un elemento di cui fare next
+            // aggiorno lastReturned e restituisco l'elemento next
+            if (this.lastReturnedNode == null) {
+                // sono all’inizio e la lista non è vuota
+                this.lastReturnedNode = HashLinkedList.this.head;
+                return this.lastReturnedNode.data;
+            } else {
+                // non sono all’inizio, ma c’è ancora qualcuno
+                this.lastReturnedNode = this.lastReturnedNode.next;
+                return this.lastReturnedNode.data;
+            }
         }
     }
 
