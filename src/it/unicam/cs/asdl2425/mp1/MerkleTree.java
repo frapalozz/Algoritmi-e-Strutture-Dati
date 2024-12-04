@@ -199,6 +199,7 @@ public class MerkleTree<T> {
         if(data == null)
             throw new IllegalArgumentException("data null!");
         
+        // Ottieni indice di data partendo da root
         return getIndexOfData(this.root, data);
     }
 
@@ -307,32 +308,9 @@ public class MerkleTree<T> {
         if(this.width != otherTree.getWidth())
             throw new IllegalArgumentException("struttura di otherTree diversa diversa rispetto albero corrente!");
 
-        return this.indexes(otherTree.getRoot(), this.root, this.getHeight(), this.width, (int)Math.pow(2, this.getHeight())-1);
-    }
-
-    /*
-     * indexes() serve ad ottenere gli indici di tutti i nodi foglia rispetto a checkedNode e realNode
-     */
-    private Set<Integer> indexes(MerkleNode checkedNode, MerkleNode realNode, int height, int index, int maxIndex){
-        Set<Integer> set = new HashSet<>();
-        // Caso base
-        if(checkedNode.isLeaf()) {
-            if(!checkedNode.getHash().equals(realNode.getHash()))
-                set.add(index);
-            return set;
-        }
-            
-        // Caso ricorsivo
-        int newMaxIndex = (maxIndex-(int)Math.pow(2, height-1));
-        // Lato sinistro diverso
-        if(!checkedNode.getLeft().getHash().equals(realNode.getLeft().getHash())) 
-            set.addAll(indexes(checkedNode.getLeft(), realNode.getLeft(), height-1, newMaxIndex, newMaxIndex));
-
-        // Lato destro diverso
-        if(!checkedNode.getRight().getHash().equals(realNode.getRight().getHash()))
-            set.addAll(indexes(checkedNode.getRight(), realNode.getRight(), height-1, index, maxIndex));
-
-        return set;
+        Set<Integer> invalidDataSet = new HashSet<>();
+        findInvalidDataIndicesRecursive(this.root, otherTree.getRoot(), 0, invalidDataSet);
+        return invalidDataSet;
     }
 
     /**
@@ -356,6 +334,24 @@ public class MerkleTree<T> {
             Set<Integer> invalidIndices) {
         // TODO implementare
 
+        // Nodo foglia quindi controllo se non valido
+        if(node.isLeaf()) 
+            if(!node.getHash().equals(otherNode.getHash())){
+                // Aggiunta indice a set
+                invalidIndices.add(nodesOnLeft);
+                return;
+            }
+
+        // Lato sinistro diverso
+        if(!node.getLeft().getHash().equals(otherNode.getLeft().getHash())) 
+            findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft*2, invalidIndices);
+
+        // Lato destro diverso
+        if(!node.getRight().getHash().equals(otherNode.getRight().getHash())){
+            int nodesLeft = nodesOnLeft+(int)Math.pow(2, nodesOnLeft);
+            findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesLeft, invalidIndices);
+        }
+
     }
 
     /**
@@ -365,8 +361,8 @@ public class MerkleTree<T> {
      * di oggetti MerkleProofHash tale per cui, combinando l'hash del dato con
      * l'hash del primo oggetto MerkleProofHash in un nuovo hash, il risultato
      * con il successivo e così via fino all'ultimo oggetto, si possa ottenere
-     * l'hash del nodo padre dell'albero. Nel caso in cui non ci, in determinati
-     * step della prova non ci siano due hash distinti da combinare, l'hash deve
+     * l'hash del nodo padre dell'albero. Nel caso in cui, in determinati
+     * step della prova non ci siano due hash distinti da combinare, l'hash viene
      * comunque ricalcolato sulla base dell'unico hash disponibile.
      *
      * @param data
@@ -382,7 +378,10 @@ public class MerkleTree<T> {
             throw new IllegalArgumentException("data null!");
         if(!this.validateData(data))
             throw new IllegalArgumentException("data non è parte dell'albero!");
-        return null;
+
+        List<MerkleNode> lista = getPathToDescendant(this.root, HashUtil.dataToHash(data));
+
+        return merkleProofGenerator(lista, this.getHeight());
     }
 
     /**
@@ -410,7 +409,36 @@ public class MerkleTree<T> {
             throw new IllegalArgumentException("branch null!");
         if(!this.validateBranch(branch))
             throw new IllegalArgumentException("branch non è parte dell'albero!");
-        return null;
+        
+        List<MerkleNode> lista = getPathToDescendant(this.root, branch.getHash());
+        
+        return merkleProofGenerator(lista, lista.size()-1);
+    }
+
+    private MerkleProof merkleProofGenerator(List<MerkleNode> listNode, int size) {
+
+        MerkleProof merkleProof = new MerkleProof(this.root.getHash(), size);
+
+        MerkleNode previous = null;
+        MerkleNode current = null;
+        for (MerkleNode merkleNode : listNode) {
+            if(current == null){
+                current = merkleNode;
+                continue;
+            }
+
+            previous = current;
+            current = merkleNode;
+            
+
+            if(current.getLeft() == previous)
+                merkleProof.addHash(current.getRight().getHash(), false);
+            else
+                merkleProof.addHash(current.getLeft().getHash(), true);
+
+        }
+        
+        return merkleProof;
     }
 
     /**
@@ -428,7 +456,32 @@ public class MerkleTree<T> {
     public List<MerkleNode> getPathToDescendant(MerkleNode currentNode,
             String dataHash) {
         // TODO implementare
-        return null;
+        List<MerkleNode> lista = new ArrayList<>();
+
+        // Caso base 
+        if(currentNode.getHash().equals(dataHash)){
+            lista.add(currentNode);
+            return lista;
+        }
+
+        if(currentNode.isLeaf())
+            return lista;
+            
+        // Caso ricorsivo
+        // Aggiungi la strada sinistra
+        lista.addAll(getPathToDescendant(currentNode.getLeft(), dataHash));
+        if(!lista.isEmpty()){
+            lista.add(currentNode);
+            return lista;
+        }
+            
+
+        // Aggiungi la strada destra
+        lista.addAll(getPathToDescendant(currentNode.getRight(), dataHash));
+        if(!lista.isEmpty())
+            lista.add(currentNode);
+
+        return lista;
     }
     
     // TODO inserire eventuali metodi privati per fini di implementazione 

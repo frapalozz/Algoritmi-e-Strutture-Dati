@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MerkleProofTest {
 
+    @SuppressWarnings("unused")
     private String rootHash1, rootHash2, rootHash3;
 
 
@@ -63,6 +64,7 @@ public class MerkleProofTest {
         assertFalse(proof.addHash("Hash non inserito", false), "L'hash non dovrebbe essere inserito");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testBuildProof3() {
         try {

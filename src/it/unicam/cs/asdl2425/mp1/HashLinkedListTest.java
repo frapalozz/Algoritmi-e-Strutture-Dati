@@ -302,7 +302,8 @@ class HashLinkedListTest {
         assertEquals(expectedList, iteratorList, "La lista generata dall'iteratore non è corretta.");
     }
 
-    @Test
+    @SuppressWarnings("unused")
+@Test
     void testFailFastIterator1() {
         list.addAtTail("Alice paga Bob");
         list.addAtTail("Bob paga Charlie");
@@ -320,7 +321,8 @@ class HashLinkedListTest {
         );
     }
 
-    @Test
+    @SuppressWarnings("unused")
+@Test
     void testFailFastIterator2() {
         list.addAtTail("Alice paga Bob");
         list.addAtTail("Bob paga Charlie");

@@ -488,7 +488,8 @@ class MerkleTreeTest {
                 "Una prova di Merkle per un dato non presente non dovrebbe essere valida.");
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+@Test
     void testVerifyProofData4(){
         try {
             MerkleProof proof =  merkleTree1.getMerkleProof("Alice paga Bob");
@@ -508,7 +509,8 @@ class MerkleTreeTest {
         }
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+@Test
     void testVerifyProofData5(){
         try {
             MerkleProof proof =  merkleTree2.getMerkleProof(1443L);
