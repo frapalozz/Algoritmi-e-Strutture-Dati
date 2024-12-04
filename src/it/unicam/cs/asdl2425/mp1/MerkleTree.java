@@ -141,10 +141,13 @@ public class MerkleTree<T> {
             throw new IllegalArgumentException("branch non è parte dell'albero!");*/
         if(data == null)
             throw new IllegalArgumentException("data null!");
+
+        String dataHash = HashUtil.dataToHash(data);
         
         int i = 0;
-        for (MerkleNode node : getNodes(branch)) {
-            if(node.getHash().equals(HashUtil.dataToHash(data)))
+        for (MerkleNode node : getLeafs(branch)) {
+            // Cerca nodo con lo stesso hash di data O(n)
+            if(node.getHash().equals(dataHash))
                 return i;
             i++;
         }
@@ -152,19 +155,26 @@ public class MerkleTree<T> {
         return -1;
     }
 
-    private LinkedList<MerkleNode> getNodes(MerkleNode node){
+    /*
+     * getLeafs() serve a trovare tutti i nodi foglia dato un nodo intermedio o root
+     * Ritorna una lista di tutti i suoi nodi foglia
+     */
+    private LinkedList<MerkleNode> getLeafs(MerkleNode node){
 
-        // Caso base
         LinkedList<MerkleNode> nodes = new LinkedList<>();
 
+        // Caso base
         if(node.isLeaf()){
+            // Aggiungi solamente il seguente nodo alla lista
             nodes.add(node);
             return nodes;
         }
 
         // Caso ricorsivo
-        nodes.addAll(getNodes(node.getLeft()));
-        nodes.addAll(getNodes(node.getRight()));
+        // Aggiungi tutti i nodi di sinistra
+        nodes.addAll(getLeafs(node.getLeft()));
+        // Aggiungi tutti i nodi di destra
+        nodes.addAll(getLeafs(node.getRight()));
         return nodes;
     }
 
@@ -221,6 +231,30 @@ public class MerkleTree<T> {
      */
     public boolean validateBranch(MerkleNode branch) {
         // TODO implementare
+        LinkedList<MerkleNode> list = new LinkedList<>();
+        list.add(this.root);
+
+        LinkedList<MerkleNode> intermediaryList = new LinkedList<>();
+        // Finchè la lista ha qualche nodo allora bisogna vedere se qualche hash corrisponde a
+        // quello del branch
+        while(!list.isEmpty()) {
+            for (MerkleNode node : list) {
+                // Hash trovato
+                if(node.getHash().equals(branch.getHash()))
+                    return true;
+                
+                // Se non è nodo foglia allora nella successiva iterazione si andrà a 
+                // controllare su questi
+                if(!node.isLeaf()) {
+                    intermediaryList.add(node.getLeft());
+                    intermediaryList.add(node.getRight());
+                }
+            }
+            // Passo la nuova lista e svuoto la lista momentanea
+            list = new LinkedList<>(intermediaryList);
+            intermediaryList.clear();
+        }
+        
         return false;
     }
 
@@ -241,7 +275,7 @@ public class MerkleTree<T> {
         if(otherTree == null)
             throw new IllegalArgumentException("otherTree null!");
 
-        return false;
+        return this.root.getHash().equals(otherTree.root.getHash());
     }
 
     /**
