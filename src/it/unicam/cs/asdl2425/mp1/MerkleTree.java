@@ -137,8 +137,8 @@ public class MerkleTree<T> {
         // TODO implementare
         if(branch == null)
             throw new IllegalArgumentException("branch null!");
-        /*if(!(validateBranch(branch)))
-            throw new IllegalArgumentException("branch non è parte dell'albero!");*/
+        if(!(validateBranch(branch)))
+            throw new IllegalArgumentException("branch non è parte dell'albero!");
         if(data == null)
             throw new IllegalArgumentException("data null!");
 
@@ -244,7 +244,7 @@ public class MerkleTree<T> {
                     return true;
                 
                 // Se non è nodo foglia allora nella successiva iterazione si andrà a 
-                // controllare su questi
+                // controllare ai suoi nodi figli
                 if(!node.isLeaf()) {
                     intermediaryList.add(node.getLeft());
                     intermediaryList.add(node.getRight());
@@ -275,6 +275,8 @@ public class MerkleTree<T> {
         if(otherTree == null)
             throw new IllegalArgumentException("otherTree null!");
 
+        // Se questo albero e quello passato hanno lo stesso hash allora
+        // significa che l'albero passato è valido
         return this.root.getHash().equals(otherTree.root.getHash());
     }
 
@@ -302,7 +304,35 @@ public class MerkleTree<T> {
         // TODO implementare
         if(otherTree == null)
             throw new IllegalArgumentException("otherTree null!");
-        return null;
+        if(this.width != otherTree.getWidth())
+            throw new IllegalArgumentException("struttura di otherTree diversa diversa rispetto albero corrente!");
+
+        return this.indexes(otherTree.getRoot(), this.root, this.getHeight(), this.width, (int)Math.pow(2, this.getHeight())-1);
+    }
+
+    /*
+     * indexes() serve ad ottenere gli indici di tutti i nodi foglia rispetto a checkedNode e realNode
+     */
+    private Set<Integer> indexes(MerkleNode checkedNode, MerkleNode realNode, int height, int index, int maxIndex){
+        Set<Integer> set = new HashSet<>();
+        // Caso base
+        if(checkedNode.isLeaf()) {
+            if(!checkedNode.getHash().equals(realNode.getHash()))
+                set.add(index);
+            return set;
+        }
+            
+        // Caso ricorsivo
+        int newMaxIndex = (maxIndex-(int)Math.pow(2, height-1));
+        // Lato sinistro diverso
+        if(!checkedNode.getLeft().getHash().equals(realNode.getLeft().getHash())) 
+            set.addAll(indexes(checkedNode.getLeft(), realNode.getLeft(), height-1, newMaxIndex, newMaxIndex));
+
+        // Lato destro diverso
+        if(!checkedNode.getRight().getHash().equals(realNode.getRight().getHash()))
+            set.addAll(indexes(checkedNode.getRight(), realNode.getRight(), height-1, index, maxIndex));
+
+        return set;
     }
 
     /**
