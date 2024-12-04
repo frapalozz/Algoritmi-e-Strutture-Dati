@@ -80,13 +80,9 @@ public class MerkleProof {
         // La lista ha raggiunto la sua dimensione massima
         if(this.proof.getSize() == length)
             return false;
-
-        if(isLeft)
-            // Aggiungi nodo alla testa della lista
-            this.proof.addAtHead(new MerkleProofHash(hash, isLeft));
-        else 
-            // Aggiungi nodo alla coda della lista
-            this.proof.addAtTail(new MerkleProofHash(hash, isLeft));
+            
+        // Aggiungi nodo alla lista
+        this.proof.addAtHead(new MerkleProofHash(hash, isLeft));
         
         return true;
     }

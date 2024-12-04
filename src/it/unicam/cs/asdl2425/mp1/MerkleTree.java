@@ -335,20 +335,31 @@ public class MerkleTree<T> {
         // TODO implementare
 
         // Nodo foglia quindi controllo se non valido
-        if(node.isLeaf()) 
-            if(!node.getHash().equals(otherNode.getHash())){
+        if(node.isLeaf()) {
+            if(!node.getHash().equals(otherNode.getHash()))
                 // Aggiunta indice a set
                 invalidIndices.add(nodesOnLeft);
-                return;
-            }
+            return;
+        }
 
         // Lato sinistro diverso
         if(!node.getLeft().getHash().equals(otherNode.getLeft().getHash())) 
-            findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft*2, invalidIndices);
+            findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft, invalidIndices);
 
         // Lato destro diverso
         if(!node.getRight().getHash().equals(otherNode.getRight().getHash())){
-            int nodesLeft = nodesOnLeft+(int)Math.pow(2, nodesOnLeft);
+            int height = 0;
+            MerkleNode flag = node.getLeft();
+
+            while (flag.getLeft() != null) {
+                height++;
+                flag = flag.getLeft();
+            }
+
+            int nodesLeft = nodesOnLeft+(int)Math.pow(2, height);
+            if(nodesLeft > this.width)
+                nodesLeft = this.width;
+
             findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesLeft, invalidIndices);
         }
 
@@ -431,10 +442,10 @@ public class MerkleTree<T> {
             current = merkleNode;
             
 
-            if(current.getLeft() == previous)
-                merkleProof.addHash(current.getRight().getHash(), false);
+            if(previous.getLeft() == current)
+                merkleProof.addHash(previous.getRight().getHash(), false);
             else
-                merkleProof.addHash(current.getLeft().getHash(), true);
+                merkleProof.addHash(previous.getLeft().getHash(), true);
 
         }
         
@@ -460,7 +471,7 @@ public class MerkleTree<T> {
 
         // Caso base 
         if(currentNode.getHash().equals(dataHash)){
-            lista.add(currentNode);
+            lista.add(0, currentNode);
             return lista;
         }
 
@@ -469,17 +480,17 @@ public class MerkleTree<T> {
             
         // Caso ricorsivo
         // Aggiungi la strada sinistra
-        lista.addAll(getPathToDescendant(currentNode.getLeft(), dataHash));
+        lista.addAll(0, getPathToDescendant(currentNode.getLeft(), dataHash));
         if(!lista.isEmpty()){
-            lista.add(currentNode);
+            lista.add(0, currentNode);
             return lista;
         }
             
 
         // Aggiungi la strada destra
-        lista.addAll(getPathToDescendant(currentNode.getRight(), dataHash));
+        lista.addAll(0, getPathToDescendant(currentNode.getRight(), dataHash));
         if(!lista.isEmpty())
-            lista.add(currentNode);
+            lista.add(0, currentNode);
 
         return lista;
     }
