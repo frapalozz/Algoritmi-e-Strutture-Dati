@@ -33,7 +33,7 @@ public class MerkleTree<T> {
      * utilizzando direttamente gli hash presenti nella lista per costruire le
      * foglie. Si noti che gli hash dei nodi intermedi dovrebbero essere
      * ottenuti da quelli inferiori concatenando hash adiacenti due a due e
-     * applicando direttmaente la funzione di hash MD5 al risultato della
+     * applicando direttamente la funzione di hash MD5 al risultato della
      * concatenazione in bytes.
      *
      * @param hashList
@@ -44,8 +44,43 @@ public class MerkleTree<T> {
      */
     public MerkleTree(HashLinkedList<T> hashList) {
         // TODO implementare
-        this.root = null;
-        this.width = -1;
+        if(hashList == null)
+            throw new IllegalArgumentException("hashList null!");
+        if(hashList.getSize() == 0)
+            throw new IllegalArgumentException("hashList vuota!");
+
+        // Lista contenete i nodi partendo dall'ultimo livello
+        ArrayList<MerkleNode> arrayMerkle = new ArrayList<>();
+
+        // Creazione nodi foglia
+        for (String hash : hashList.getAllHashes()) {
+            arrayMerkle.add(new MerkleNode(hash));
+        }
+
+        ArrayList<MerkleNode> momentaryArray = new ArrayList<>();
+        while (arrayMerkle.size() > 1) {
+            for(int i = 0; i < arrayMerkle.size(); i+=2){
+                // Il seguente nodo ha un nodo fratello con cui essere combinato
+                if(i+1<arrayMerkle.size()){
+                    // Creazione nodo combinato
+                    MerkleNode combNode = new MerkleNode(
+                        HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes()), arrayMerkle.get(i), arrayMerkle.get(i+1)
+                    );
+
+                    // Aggiunta nodo combinato all'array momentaneo
+                    momentaryArray.add(combNode);
+                }
+                // Il seguente nodo non ha un nodo fratello con cui essere combinato
+                else 
+                    momentaryArray.add(arrayMerkle.get(i));
+            }
+            // Sostituisco la lista con i nuovi nodi combinati
+            arrayMerkle = new ArrayList<>(momentaryArray);
+            momentaryArray.clear();
+        }
+
+        this.root = arrayMerkle.get(0);
+        this.width = hashList.getSize();
     }
 
     /**
@@ -73,7 +108,7 @@ public class MerkleTree<T> {
      */
     public int getHeight() {
         // TODO implementare
-        return -1;
+        return (int) Math.ceil(Math.log(this.width) / Math.log(2));
     }
 
     /**
@@ -100,8 +135,40 @@ public class MerkleTree<T> {
      */
     public int getIndexOfData(MerkleNode branch, T data) {
         // TODO implementare
+        if(branch == null)
+            throw new IllegalArgumentException("branch null!");
+        /*if(!(validateBranch(branch)))
+            throw new IllegalArgumentException("branch non è parte dell'albero!");*/
+        if(data == null)
+            throw new IllegalArgumentException("data null!");
+        
+        int i = 0;
+        for (MerkleNode node : getNodes(branch)) {
+            if(node.getHash().equals(HashUtil.dataToHash(data)))
+                return i;
+            i++;
+        }
+
         return -1;
     }
+
+    private LinkedList<MerkleNode> getNodes(MerkleNode node){
+
+        // Caso base
+        LinkedList<MerkleNode> nodes = new LinkedList<>();
+
+        if(node.isLeaf()){
+            nodes.add(node);
+            return nodes;
+        }
+
+        // Caso ricorsivo
+        nodes.addAll(getNodes(node.getLeft()));
+        nodes.addAll(getNodes(node.getRight()));
+        return nodes;
+    }
+
+
 
     /**
      * Restituisce l'indice di un elemento secondo questo albero di Merkle. Gli
@@ -119,7 +186,10 @@ public class MerkleTree<T> {
      */
     public int getIndexOfData(T data) {
         // TODO implementare
-        return -1;
+        if(data == null)
+            throw new IllegalArgumentException("data null!");
+        
+        return getIndexOfData(this.root, data);
     }
 
     /**
@@ -134,7 +204,8 @@ public class MerkleTree<T> {
      */
     public boolean validateData(T data) {
         // TODO implementare
-        return false;
+        
+        return getIndexOfData(data) > -1;
     }
 
     /**
@@ -167,6 +238,9 @@ public class MerkleTree<T> {
      */
     public boolean validateTree(MerkleTree<T> otherTree) {
         // TODO implementare
+        if(otherTree == null)
+            throw new IllegalArgumentException("otherTree null!");
+
         return false;
     }
 
@@ -192,6 +266,8 @@ public class MerkleTree<T> {
      */
     public Set<Integer> findInvalidDataIndices(MerkleTree<T> otherTree) {
         // TODO implementare
+        if(otherTree == null)
+            throw new IllegalArgumentException("otherTree null!");
         return null;
     }
 
@@ -238,6 +314,10 @@ public class MerkleTree<T> {
      */
     public MerkleProof getMerkleProof(T data) {
         // TODO implementare
+        if(data == null)
+            throw new IllegalArgumentException("data null!");
+        if(!this.validateData(data))
+            throw new IllegalArgumentException("data non è parte dell'albero!");
         return null;
     }
 
@@ -262,6 +342,10 @@ public class MerkleTree<T> {
      */
     public MerkleProof getMerkleProof(MerkleNode branch) {
         // TODO implementare
+        if(branch == null)
+            throw new IllegalArgumentException("branch null!");
+        if(!this.validateBranch(branch))
+            throw new IllegalArgumentException("branch non è parte dell'albero!");
         return null;
     }
 
