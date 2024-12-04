@@ -357,8 +357,6 @@ public class MerkleTree<T> {
             }
 
             int nodesLeft = nodesOnLeft+(int)Math.pow(2, height);
-            if(nodesLeft > this.width)
-                nodesLeft = this.width;
 
             findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesLeft, invalidIndices);
         }
