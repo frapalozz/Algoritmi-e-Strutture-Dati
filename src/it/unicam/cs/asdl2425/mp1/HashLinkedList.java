@@ -104,6 +104,7 @@ public class HashLinkedList<T> implements Iterable<T> {
             this.head = newNode;
         }
 
+        // Aumenta size numero modifiche
         this.size++;
         this.numeroModifiche++;
     }
@@ -131,6 +132,7 @@ public class HashLinkedList<T> implements Iterable<T> {
             this.tail = newNode;
         }
 
+        // Aumenta size numero modifiche
         this.size++;
         this.numeroModifiche++;
     }
@@ -143,12 +145,15 @@ public class HashLinkedList<T> implements Iterable<T> {
     public ArrayList<String> getAllHashes() {
         // TODO implementare
 
+        // Creazione ArrayList 
         ArrayList<String> arrayHashes = new ArrayList<>();
-        Node node = HashLinkedList.this.head;
+        
+        // Puntatore al nodo head
+        Node node = this.head;
 
         // Iterazione su tutti i nodi della lista
         while (node != null) {
-            // Inserimento hash del nodo nel ArrayList
+            // Inserimento hash del nodo corrente nel ArrayList
             arrayHashes.add(node.hash);
             
             // Puntatore node al nodo seguente
@@ -177,6 +182,8 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         // Creazione stringBuffer
         StringBuffer nodesString = new StringBuffer();
+
+        // Puntatore al nodo head
         Node node = this.head;
 
         // Iterazione sui nodi della lista
@@ -201,52 +208,46 @@ public class HashLinkedList<T> implements Iterable<T> {
     public boolean remove(T data) {
         // TODO implementare
 
-        // lista vuota
-        if(this.size == 0) 
+        Node currentNode = this.head;
+        Node previousNode = null;   
+
+        // Itera per trovare il nodo da eliminare
+        while (currentNode != null && !currentNode.data.equals(data)) {
+            previousNode = currentNode;
+            currentNode = currentNode.next;
+        }
+
+        // Nodo non presente
+        if(currentNode == null)
             return false;
 
-        Node currentNode = this.head;
-        Node previousNode = currentNode;
-
-        // Controlla se data è in testa alla lista
-        if(this.head.data.equals(data)) {
+        // nodo da eliminare nella testa
+        if(previousNode == null){
+            // Unico nodo nella lista, allora svuoto la lista
             if(this.size == 1) {
                 this.head = null;
                 this.tail = null;
             }
-            else this.head = currentNode.next;
             
-            this.numeroModifiche++;
-            this.size--;
-            return true;
+            // Non è unico nodo nella lista, allora la head punta al nodo dopo la testa corrente
+            else this.head = currentNode.next;
         }
 
-        currentNode = currentNode.next;
-
-        // Cerca elemento dentro HashLinkedList
-        while (currentNode != null) {
-
-            if(currentNode.data.equals(data)) {
-                
-                // Se siamo nella coda
-                if(currentNode.next == null) {
-                    previousNode.next = null;
-                    this.tail = previousNode;
-                }
-                // Se non siamo nella coda
-                else 
-                    previousNode.next = currentNode.next;
-
-                this.numeroModifiche++;
-                this.size--;
-                return true;
+        // nodo da eliminare non in testa
+        else{
+            // nodo da eliminare in coda
+            if(currentNode.next == null){
+                previousNode.next = null;
+                this.tail = previousNode;
             }
-
-            previousNode = currentNode;
-            currentNode = currentNode.next;
+            // nodo da eliminare nel mezzo
+            else
+                previousNode.next = currentNode.next;
         }
-    
-        return false;
+
+        this.numeroModifiche++;
+        this.size--;
+        return true;
     }
 
     @Override
@@ -261,7 +262,9 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         // TODO inserire le variabili istanza che si ritengono necessarie
 
+        // expectedModCount serve per controllo fail-fast
         private int expectedModCount;
+        // ultimo nodo ritornato da next()
         private Node lastReturnedNode;
 
         private Itr() {
@@ -277,10 +280,10 @@ public class HashLinkedList<T> implements Iterable<T> {
             // TODO implementare
 
             if (this.lastReturnedNode == null)
-                // sono all'inizio dell'iterazione, quindi controllo se la lista ha una testa
+                // inizio iterazione, quindi controlla se esiste la testa
                 return HashLinkedList.this.head != null;
             else
-                // Vedo se esiste il nodo successivo
+                // Controlla se esiste il nodo seguente
                 return this.lastReturnedNode.next != null;
         }
 
@@ -288,23 +291,25 @@ public class HashLinkedList<T> implements Iterable<T> {
         public T next() {
             // TODO implementare
 
-            // controllo concorrenza
+            // Controllo se nel mentre è stata modificata la lista (fail-fast)
             if (this.expectedModCount != HashLinkedList.this.numeroModifiche) {
                 throw new ConcurrentModificationException(
-                        "Lista modificata durante l'iterazione");
+                        "Lista modificata");
             }
-            // controllo hasNext()
+            
+            // Controllo che ha un elemento successivo
             if (!hasNext())
                 throw new NoSuchElementException(
-                        "Richiesta di next quando hasNext è falso");
-            // c'è sicuramente un elemento di cui fare next
+                        "Richiesta next senza nessun elemento successivo");
+
+            // C'è sicuramente un altro elemento
             // aggiorno lastReturnedNode e restituisco l'elemento successivo
             if (this.lastReturnedNode == null) {
-                // sono all’inizio e la lista non è vuota
+                // sono all’inizio della lista
                 this.lastReturnedNode = HashLinkedList.this.head;
                 return this.lastReturnedNode.data;
             } else {
-                // non sono all’inizio, ma c’è ancora un altro nodo
+                // non sono all’inizio della lista
                 this.lastReturnedNode = this.lastReturnedNode.next;
                 return this.lastReturnedNode.data;
             }

@@ -140,6 +140,10 @@ public class MerkleProof {
              * Due MerkleProofHash sono uguali se hanno lo stesso hash e lo
              * stesso flag isLeft
              */
+            if(obj == null)
+                throw new NullPointerException("obj null!");
+            if(this == obj)
+                return true;
             // Se l'oggetto passato non è un MerkleProofHash allora ritorna false
             if(!(obj instanceof MerkleProofHash))
                 return false;
