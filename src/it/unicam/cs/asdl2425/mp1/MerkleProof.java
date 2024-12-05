@@ -229,10 +229,12 @@ public class MerkleProof {
         // Iterazione nodi nella lista proof
         for (MerkleProofHash merkleProofHash : this.proof) {
             // Calcolo hash combinando l'ultimo hash calcolato con il successivo hash del seguente nodo MerkleProofHash
+            if(merkleProofHash.getHash().equals(""))
+                continue;
             if(merkleProofHash.isLeft())
                 calculatedHash = HashUtil.computeMD5( (merkleProofHash.getHash() + calculatedHash).getBytes() );
             else 
-                calculatedHash = HashUtil.computeMD5( ( calculatedHash + merkleProofHash.getHash()).getBytes() );
+                calculatedHash = HashUtil.computeMD5( (calculatedHash + merkleProofHash.getHash()).getBytes() );
         }
 
         return calculatedHash;

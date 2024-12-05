@@ -510,6 +510,7 @@ class MerkleTreeTest {
     }
 
     
+@SuppressWarnings("unchecked")
 @Test
     void testVerifyProofData5(){
         try {

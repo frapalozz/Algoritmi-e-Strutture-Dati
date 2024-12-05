@@ -428,23 +428,30 @@ public class MerkleTree<T> {
 
         MerkleProof merkleProof = new MerkleProof(this.root.getHash(), size);
 
+        ListIterator<MerkleNode> invertedIterator = listNode.listIterator(listNode.size());
+
+        int i = size - listNode.size();
+        while (i >= 0) {
+            merkleProof.addHash("", false);
+            i--;
+        }
+
         MerkleNode previous = null;
         MerkleNode current = null;
-        for (MerkleNode merkleNode : listNode) {
+        while (invertedIterator.hasPrevious()) {
             if(current == null){
-                current = merkleNode;
+                current = invertedIterator.previous();
                 continue;
             }
 
             previous = current;
-            current = merkleNode;
+            current = invertedIterator.previous();
             
 
-            if(previous.getLeft() == current)
-                merkleProof.addHash(previous.getRight().getHash(), false);
+            if(current.getLeft() == previous)
+                merkleProof.addHash(current.getRight().getHash(), false);
             else
-                merkleProof.addHash(previous.getLeft().getHash(), true);
-
+                merkleProof.addHash(current.getLeft().getHash(), true);
         }
         
         return merkleProof;
