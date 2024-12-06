@@ -58,20 +58,24 @@ public class MerkleTree<T> {
         }
 
         ArrayList<MerkleNode> momentaryArray = new ArrayList<>();
+
         while (arrayMerkle.size() > 1) {
             for(int i = 0; i < arrayMerkle.size(); i+=2){
-                // Il seguente nodo ha un nodo fratello con cui essere combinato
-                if(i+1<arrayMerkle.size()){
+                
+                if(arrayMerkle.size() > i+1){
+                    // Abbiamo due nodi per combinare gli hash
+
+                    // Creazione hash combinato 
+                    String hashCombinato = HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes());
+
                     // Creazione nodo combinato
-                    MerkleNode combNode = new MerkleNode(
-                        HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes()), arrayMerkle.get(i), arrayMerkle.get(i+1)
-                    );
+                    MerkleNode combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), arrayMerkle.get(i+1));
 
                     // Aggiunta nodo combinato all'array momentaneo
                     momentaryArray.add(combNode);
                 }
-                // Il seguente nodo non ha un nodo fratello con cui essere combinato
                 else 
+                    // Il seguente nodo non ha un nodo fratello con cui essere combinato
                     momentaryArray.add(arrayMerkle.get(i));
             }
             // Sostituisco la lista con i nuovi nodi combinati
@@ -108,6 +112,8 @@ public class MerkleTree<T> {
      */
     public int getHeight() {
         // TODO implementare
+
+        // Altezza = log_2(width)
         return (int) Math.ceil(Math.log(this.width) / Math.log(2));
     }
 
@@ -142,43 +148,15 @@ public class MerkleTree<T> {
         if(data == null)
             throw new IllegalArgumentException("data null!");
 
+        // Hash di data
         String dataHash = HashUtil.dataToHash(data);
         
-        int i = 0;
-        for (MerkleNode node : getLeafs(branch)) {
-            // Cerca nodo con lo stesso hash di data O(n)
-            if(node.getHash().equals(dataHash))
-                return i;
-            i++;
-        }
+        int[] i = {-1, 0};
+        // trova indice di data
+        getIndex(branch, dataHash, i);
 
-        return -1;
+        return i[0];
     }
-
-    /*
-     * getLeafs() serve a trovare tutti i nodi foglia dato un nodo intermedio o root
-     * Ritorna una lista di tutti i suoi nodi foglia
-     */
-    private LinkedList<MerkleNode> getLeafs(MerkleNode node){
-
-        LinkedList<MerkleNode> nodes = new LinkedList<>();
-
-        // Caso base
-        if(node.isLeaf()){
-            // Aggiungi solamente il seguente nodo alla lista
-            nodes.add(node);
-            return nodes;
-        }
-
-        // Caso ricorsivo
-        // Aggiungi tutti i nodi di sinistra
-        nodes.addAll(getLeafs(node.getLeft()));
-        // Aggiungi tutti i nodi di destra
-        nodes.addAll(getLeafs(node.getRight()));
-        return nodes;
-    }
-
-
 
     /**
      * Restituisce l'indice di un elemento secondo questo albero di Merkle. Gli
@@ -201,6 +179,43 @@ public class MerkleTree<T> {
         
         // Ottieni indice di data partendo da root
         return getIndexOfData(this.root, data);
+    }
+
+    /*
+     * getIndex() serve a trovare l'indice di un dato elemento
+     * Ricerca ricorsivamente tra tutte le foglie, se la foglia controllata non corrisponde al dato
+     * allora viene incrementato l'indice. Se la foglia corrisponde al dato, allora viene impostato l'indice
+     */
+    private void getIndex(MerkleNode node, String data, int[] i){
+
+        if(i[0] == i[1])
+            // è stato trovato l'indice
+            return;
+
+        if(node.isLeaf()){
+            // Caso base
+            // Il seguente nodo è una foglia
+
+            if(data.equals(node.getHash())) {
+                // L'hash corrisponde a quello di data, quindi salvo il suo indice
+                i[0] = i[1];
+            }
+            else {
+                // La seguente foglia non ha lo stesso hash di data, quindi incremento indice
+                i[1]++;
+            }
+                
+            return;
+        }
+
+        // Caso ricorsivo
+        // Non è ancora stato trovato la foglia con hash data
+        // Cerco nei nodi a sinistra
+        getIndex(node.getLeft(), data, i);
+        // Cerco nei nodi a destra
+        getIndex(node.getRight(), data, i);
+        
+        return;
     }
 
     /**
