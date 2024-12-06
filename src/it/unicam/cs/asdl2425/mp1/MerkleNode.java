@@ -73,8 +73,8 @@ public class MerkleNode {
      * @return true se il nodo è una foglia, false altrimenti.
      */
     public boolean isLeaf() {
-        // TODO implementare
-        // Se il nodo è una foglia allora non deve avere figli
+
+        // Se il nodo non ha figli, allora è una foglia
         return this.left == null && this.right == null;
     }
 
@@ -85,20 +85,20 @@ public class MerkleNode {
 
     @Override
     public boolean equals(Object obj) {
-        // TODO implementare
+        
+        if(obj == null)
+            throw new NullPointerException("obj null!");
+        if(this == obj)
+            return true;
 
-        /* due nodi sono uguali se hanno lostesso hash */
-
-        // Se l'oggetto passato è un MerkleNode, allora controlla se il suo hash è uguale a this.hash
+        // Se l'oggetto passato è un MerkleNode, allora controlla se hanno lo stesso hash
         // Altrimenti ritorna false
         return (obj instanceof MerkleNode)? this.hash.equals( ((MerkleNode) obj).getHash() ) : false;
     }
 
     @Override
     public int hashCode() {
-        // TODO implementare
-
-        /* implementare in accordo a equals */
+        
         final int prime = 31;
         int result = 1;
         long temp = this.hash.hashCode();
