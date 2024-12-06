@@ -12,7 +12,7 @@ import java.util.*;
  * singolo hash root. In questa implementazione la verifica di dati avviene
  * utilizzando hash MD5.
  * 
- * @author Luca Tesei, Marco Caputo, Francesco Palozzi francesco.palozzi@studenti.unicam.it
+ * @author Luca Tesei, Marco Caputo (template), Francesco Palozzi francesco.palozzi@studenti.unicam.it (implementazione)
  *
  * @param <T>
  *                il tipo di dati su cui l'albero è costruito.

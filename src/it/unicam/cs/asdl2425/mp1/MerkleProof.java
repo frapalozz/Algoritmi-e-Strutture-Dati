@@ -8,7 +8,7 @@ package it.unicam.cs.asdl2425.mp1;
  * elemento o branch in un albero di Merkle decisi al momento di costruzione
  * della prova.
  * 
- * @author Luca Tesei, Marco Caputo, Francesco Palozzi francesco.palozzi@studenti.unicam.it
+ * @author Luca Tesei, Marco Caputo (template), Francesco Palozzi francesco.palozzi@studenti.unicam.it (implementazione)
  */
 public class MerkleProof {
 

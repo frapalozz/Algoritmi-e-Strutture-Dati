@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
  * @param <T>
  *                il tipo generico dei dati contenuti nei nodi della lista.
  * 
- * @author Luca Tesei, Marco Caputo, Francesco Palozzi francesco.palozzi@studenti.unicam.it
+ * @author Luca Tesei, Marco Caputo (template), Francesco Palozzi francesco.palozzi@studenti.unicam.it (implementazione)
  * 
  */
 public class HashLinkedList<T> implements Iterable<T> {
