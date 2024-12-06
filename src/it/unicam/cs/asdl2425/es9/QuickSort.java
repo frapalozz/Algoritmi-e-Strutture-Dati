@@ -29,33 +29,36 @@ public class QuickSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
             // per ordinare la lista vuota o con un solo elemento non faccio niente
             return new SortingAlgorithmResult<>(l, 0);
 
-        int[] countCompare = {0};
-        
-        quickSort(l, 0, l.size()-1, countCompare);
-
-        return new SortingAlgorithmResult<>(l, 0);
+        return new SortingAlgorithmResult<E>(l, quickSort(l, 0, l.size()-1));
     }
 
-    private void quickSort(List<E> l, int p, int r, int[] countCompare){
-        if(r-p <= 1)
-            return;
+    private int quickSort(List<E> unsortedList, int left, int right){
+        if(left >= right)
+            return 0;
 
-        E pivot = l.get(r);
-        int i = p-1;
+        E pivot = unsortedList.get(right);
+        int i = left-1;
         E temp;
+        int countCompare = 0;
 
-        for(int j = p; j <= r; j++){
-            if(i == -1 || l.get(i).compareTo(pivot) < 1){
+        for(int j = left; j < right; j++){
+            if(unsortedList.get(j).compareTo(pivot) < 1){
                 i++;
-                temp = l.get(i);
-                l.set(i, l.get(j));
-                l.set(j, temp);
+                temp = unsortedList.get(i);
+                unsortedList.set(i, unsortedList.get(j));
+                unsortedList.set(j, temp);
             }
-            countCompare[0]++;
+            countCompare++;
         }
+        i++;
+        temp = unsortedList.get(i);
+        unsortedList.set(i, unsortedList.get(right));
+        unsortedList.set(right, temp);
 
-        quickSort(l, p, i, countCompare);
-        quickSort(l, i+1, r, countCompare);
+        countCompare += quickSort(unsortedList, left, i-1);
+        countCompare += quickSort(unsortedList, i+1, right);
+
+        return countCompare;
     }
 
     @Override

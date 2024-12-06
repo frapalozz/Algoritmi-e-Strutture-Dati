@@ -6,8 +6,6 @@ package it.unicam.cs.asdl2425.es9;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO completare import
-
 /**
  * Implementazione dell'algoritmo di Merge Sort integrata nel framework di
  * valutazione numerica. Non è richiesta l'implementazione in loco.
@@ -18,62 +16,70 @@ import java.util.List;
 public class MergeSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
 
     public SortingAlgorithmResult<E> sort(List<E> l) {
-        // TODO implementare
         if(l == null)
             throw new NullPointerException();
 
         if(l.size() < 2)
             return new SortingAlgorithmResult<>(l, 0);
 
-
-        int[] countCompare = {0};
-
-        mergeSort(l, 0, l.size()-1, countCompare);
-
-        return new SortingAlgorithmResult<>(l, countCompare[0]);
+        return new SortingAlgorithmResult<>(l, mergeSort(l, 0, l.size()-1));
     }
 
-    private void mergeSort(List<E> l, int left, int right, int[] countCompare){
+    private int mergeSort(List<E> l, int left, int right){
+
+        int countCompare = 0;
+        // Se la sinistra è più piccola della destra allora non eseguire il mergeSort
         if(left < right){
+            // Prendi il mezzo dell'array
             int center = (left + right)/2;
-            mergeSort(l, left, center, countCompare);
-            mergeSort(l, center+1, right, countCompare);
-            merge(l, left, center, right, countCompare);
+
+            // Esegui mergeSort a sinistra
+            countCompare += mergeSort(l, left, center);
+            // Esegui mergeSort a destra
+            countCompare += mergeSort(l, center+1, right);
+            // Unisci ordinando
+            countCompare += merge(l, left, center, right);
         }
+
+        return countCompare;
     }
 
-    private void merge(List<E> l, int left, int center, int right, int[] countCompare){
-        int i = left;
-        int j = center+1;
+    private int merge(List<E> unsortedList, int left, int center, int right){
+        if(left >= right)
+            // Se la sinistra è uguale o maggiore di desta allora non eseguire il merge
+            return 0;
+
+        int countCompare = 0; // contatore controlli
+        int indexLeft = left; // Indice lato sinistro
+        int indexRight = center+1; // Indice lato destro
+        List<E> sortedList = new ArrayList<>();
         int k = 0;
-        List<E> b = new ArrayList<>();
 
-        while (i <= center && j <= right) {
-            if(l.get(i).compareTo(l.get(j)) <= 0){
-                k++;
-                b.add(l.get(i++));
-            }
-            else{
-                k++;
-                b.add(l.get(j++));
-            }
+        // Compara destra e sinistra
+        while (indexLeft <= center && indexRight <= right) {
+            if(unsortedList.get(indexLeft).compareTo(unsortedList.get(indexRight)) <= 0)
+                // Se nell'indice nel lato sinistro il valore è più piccolo, allora aggiungilo all'array
+                sortedList.add(unsortedList.get(indexLeft++));
+            else
+                // Se nell'indice nel lato destro il valore è più piccolo, allora aggiungilo all'array
+                sortedList.add(unsortedList.get(indexRight++));
                 
-            countCompare[0]++;
+            countCompare++;
         }
 
-        while (i <= center) {
-            k++;
-            b.add(l.get(i++));
-        }
+        // Aggiungi tutti i valori rimanenti nel lato sinistro
+        while (indexLeft <= center) 
+            sortedList.add(unsortedList.get(indexLeft++));
 
-        while (j <= right) {
-            k++;
-            b.add(l.get(i++));
-        }
+        // Aggiungi tutti i valori rimanenti nel lato destro
+        while (indexRight <= right) 
+            sortedList.add(unsortedList.get(indexRight++));
 
-        for(k = left; k <= right; k++){
-            l.add(k, b.get(k-left));
-        }
+        // Aggiungi modifiche all'array principale
+        for(int i = left; i <= right; i++)
+            unsortedList.set(i, sortedList.get(k++));
+
+            return countCompare;
     }
 
     public String getName() {

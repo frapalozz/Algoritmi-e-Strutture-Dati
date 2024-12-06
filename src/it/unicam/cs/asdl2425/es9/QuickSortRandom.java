@@ -32,37 +32,54 @@ public class QuickSortRandom<E extends Comparable<E>>
             // per ordinare la lista vuota o con un solo elemento non faccio niente
             return new SortingAlgorithmResult<>(l, 0);
 
-        int[] countCompare = {0};
-        
-        randomQuickSort(l, 0, l.size()-1, countCompare);
-
-
-        return null;
+        return new SortingAlgorithmResult<>(l, randomQuickSort(l, 0, l.size()-1));
     }
 
-    private void randomQuickSort(List<E> l, int p, int r, int[] countCompare){
-        if(r-p == 1)
-            return;
+    private int randomQuickSort(List<E> unsortedList, int left, int right){
+        if(left >= right){
+            return 0;
+        }
 
-        E pivot = l.get(randomGenerator.nextInt(r));
-        int i = p;
+        int countCompare = 0;
+        int rightVal = randomGenerator.nextInt(right+1);
+        
+        if(rightVal <= left)
+            rightVal = left+1;
+
+        E pivot = unsortedList.get(rightVal);
+        int i = left-1;
         E temp;
 
-        for(int j = p+1; j <= r; j++){
-            if(l.get(i).compareTo(pivot) < 1){
-                i++;
-                temp = l.get(i);
-                l.set(i, l.get(j));
-                l.set(j, temp);
+        for(int j = rightVal+1; j <= right; j++) {
+            if(unsortedList.get(j).compareTo(pivot) < 1){
+                temp = unsortedList.get(j);
+                unsortedList.set(j, unsortedList.get(rightVal));
+                unsortedList.set(rightVal, temp);
+                rightVal = j;
             }
-            countCompare[0]++;
         }
-        temp = l.get(i);
-        l.set(i, l.get(r));
-        l.set(r, temp);
+        for(int j = left; j < rightVal; j++){
+            if(unsortedList.get(j).compareTo(pivot) < 1){
+                i++;
+                temp = unsortedList.get(i);
+                unsortedList.set(i, unsortedList.get(j));
+                unsortedList.set(j, temp);
+            }
+            countCompare++;
+        }
+        i++;
+        temp = unsortedList.get(i);
+        unsortedList.set(i, unsortedList.get(rightVal));
+        unsortedList.set(rightVal, temp);
+        
+        
 
-        randomQuickSort(l, p, i, countCompare);
-        randomQuickSort(l, i+1, r, countCompare);
+        // Sinistra
+        countCompare += randomQuickSort(unsortedList, left, i-1);
+        // Destra
+        countCompare += randomQuickSort(unsortedList, i+1, right);
+
+        return countCompare;
     }
 
     @Override
