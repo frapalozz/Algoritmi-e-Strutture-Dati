@@ -5,8 +5,6 @@ package it.unicam.cs.asdl2425.es9;
 
 import java.util.List;
 
-// TODO completare import
-
 /**
  * Implementazione del QuickSort con scelta della posizione del pivot fissa.
  * L'implementazione è in loco.
@@ -20,7 +18,6 @@ public class QuickSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
 
     @Override
     public SortingAlgorithmResult<E> sort(List<E> l) {
-        // TODO implementare
 
         if(l == null)
             throw new NullPointerException("Tentativo di ordinare una lista null");

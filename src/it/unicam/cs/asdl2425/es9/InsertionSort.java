@@ -2,8 +2,6 @@ package it.unicam.cs.asdl2425.es9;
 
 import java.util.List;
 
-// TODO completare import
-
 /**
  * Implementazione dell'algoritmo di Insertion Sort integrata nel framework di
  * valutazione numerica. L'implementazione è in loco.
@@ -17,7 +15,6 @@ public class InsertionSort<E extends Comparable<E>>
         implements SortingAlgorithm<E> {
 
     public SortingAlgorithmResult<E> sort(List<E> l) {
-        // TODO implementare
         if(l == null)
             throw new NullPointerException("Tentativo di ordinare una lista null");
 
@@ -27,23 +24,23 @@ public class InsertionSort<E extends Comparable<E>>
         
         int countCompare = 0;
         E appoggio = null;
-        int a, b;
+        int attuale, precedente;
 
         for(int i = 1; i < l.size(); i++){
-            a = i;
-            b = i-1;
-            while (b > -1 && l.get(a).compareTo(l.get(b)) < 0) {
+            attuale = i;
+            precedente = i-1;
+            while (precedente > -1 && l.get(attuale).compareTo(l.get(precedente)) < 0) {
                 countCompare++;
 
-                appoggio = l.get(a);
-                l.set(a, l.get(b));
-                l.set(b, appoggio);
+                appoggio = l.get(attuale);
+                l.set(attuale, l.get(precedente));
+                l.set(precedente, appoggio);
 
-                a--;
-                b--;
+                attuale--;
+                precedente--;
             }
 
-            if(b > -1)
+            if(precedente > -1)
                 countCompare++;
         }
 

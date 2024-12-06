@@ -6,8 +6,6 @@ package it.unicam.cs.asdl2425.es9;
 import java.util.List;
 import java.util.Random;
 
-//TODO completare import
-
 /**
  * Implementazione del QuickSort con scelta della posizione del pivot scelta
  * randomicamente tra le disponibili. L'implementazione è in loco.
@@ -24,7 +22,6 @@ public class QuickSortRandom<E extends Comparable<E>>
 
     @Override
     public SortingAlgorithmResult<E> sort(List<E> l) {
-        // TODO implementare
         if(l == null)
             throw new NullPointerException("Tentativo di ordinare una lista null");
 
