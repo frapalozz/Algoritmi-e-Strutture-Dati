@@ -75,7 +75,6 @@ public class MerkleProof {
      * @return true se l'hash è stato aggiunto con successo, false altrimenti.
      */
     public boolean addHash(String hash, boolean isLeft) {
-        // TODO implementare
 
         // La lista ha raggiunto la sua dimensione massima
         if(this.proof.getSize() == length)
@@ -134,22 +133,17 @@ public class MerkleProof {
 
         @Override
         public boolean equals(Object obj) {
-            // TODO implementare
 
-            /*
-             * Due MerkleProofHash sono uguali se hanno lo stesso hash e lo
-             * stesso flag isLeft
-             */
-            if(obj == null)
-                throw new NullPointerException("obj null!");
             if(this == obj)
                 return true;
+
             // Se l'oggetto passato non è un MerkleProofHash allora ritorna false
             if(!(obj instanceof MerkleProofHash))
                 return false;
             
             MerkleProofHash mph = (MerkleProofHash) obj;
-            // Controlla se hanno lo stesso hash e isLeft
+
+            // Controlla se hanno lo stesso hash e lo stesso flag isLeft
             return mph.getHash().equals(this.hash) && mph.isLeft() == this.isLeft;
 
         }
@@ -161,11 +155,7 @@ public class MerkleProof {
 
         @Override
         public int hashCode() {
-            // TODO implementare
 
-            /*
-             * Implementare in accordo a equals
-             */
             final int prime = 31;
             int result = 1;
             long temp = this.toString().hashCode();
@@ -188,7 +178,7 @@ public class MerkleProof {
      *                                      se il dato è null.
      */
     public boolean proveValidityOfData(Object data) {
-        // TODO implementare
+        
         if(data == null)
             throw new IllegalArgumentException("data null in proveValidityOfData()!");
         
@@ -210,7 +200,7 @@ public class MerkleProof {
      *                                      se il branch è null.
      */
     public boolean proveValidityOfBranch(MerkleNode branch) {
-        // TODO implementare
+        
         if(branch == null)
             throw new IllegalArgumentException("branch null in proveValidityOfBranch()!");
 
@@ -218,11 +208,9 @@ public class MerkleProof {
         return computeHash(branch.getHash()).equals(this.rootHash);
     }
 
-    // TODO inserire eventuali metodi privati per fini di implementazione
-
     /*
      * Calcola l'hash combinato dato un valore hash iniziale.
-     * Il calcolo viene eseguito combinando l'hash passato con l'hash del primo oggetto MerkleProofHash
+     * Il calcolo viene eseguito combinando l'hash passato con l'hash del primo oggetto MerkleProofHash nel proof
      * in un nuovo hash, il risultato con il successivo e così via fino
      * all'ultimo oggetto.
      */
@@ -233,11 +221,17 @@ public class MerkleProof {
         // Iterazione nodi nella lista proof
         for (MerkleProofHash merkleProofHash : this.proof) {
             // Calcolo hash combinando l'ultimo hash calcolato con il successivo hash del seguente nodo MerkleProofHash
+
             if(merkleProofHash.getHash().equals(""))
+                // Il seguente nodo non ha un hash (nodo fantasma)
+                // Quindi l'hash calcolato non varia
                 continue;
+
             if(merkleProofHash.isLeft())
+                // Calcola nuovo hash combinando hash calcolato a destra del prossimo hash nella lista proof
                 calculatedHash = HashUtil.computeMD5( (merkleProofHash.getHash() + calculatedHash).getBytes() );
             else 
+                // Calcola nuovo hash combinando hash calcolato a sinistra del prossimo hash nella lista proof
                 calculatedHash = HashUtil.computeMD5( (calculatedHash + merkleProofHash.getHash()).getBytes() );
         }
 
