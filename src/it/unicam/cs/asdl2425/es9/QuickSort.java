@@ -21,7 +21,19 @@ public class QuickSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
     @Override
     public SortingAlgorithmResult<E> sort(List<E> l) {
         // TODO implementare
-        return null;
+
+        if(l == null)
+            throw new NullPointerException("Tentativo di ordinare una lista null");
+
+        if(l.size() < 2)
+            // per ordinare la lista vuota o con un solo elemento non faccio niente
+            return new SortingAlgorithmResult<>(l, 0);
+
+        int countCompare = 0;
+        E appoggio = null;
+
+
+        return new SortingAlgorithmResult<>(l, 0);
     }
 
     @Override
