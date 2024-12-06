@@ -86,8 +86,6 @@ public class MerkleNode {
     @Override
     public boolean equals(Object obj) {
         
-        if(obj == null)
-            throw new NullPointerException("obj null!");
         if(this == obj)
             return true;
 
