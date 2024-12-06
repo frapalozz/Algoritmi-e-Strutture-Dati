@@ -5,8 +5,6 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-//TODO inserire gli import della Java SE che si ritengono necessari
-
 /**
  * Una classe che rappresenta una lista concatenata con il calcolo degli hash
  * MD5 per ciascun elemento. Ogni nodo della lista contiene il dato originale di
@@ -88,7 +86,6 @@ public class HashLinkedList<T> implements Iterable<T> {
      *                 il dato da aggiungere.
      */
     public void addAtHead(T data) {
-        // TODO implementare
 
         // Creazione nodo da aggiungere
         Node newNode = new Node(data);
@@ -116,7 +113,6 @@ public class HashLinkedList<T> implements Iterable<T> {
      *                 il dato da aggiungere.
      */
     public void addAtTail(T data) {
-        // TODO implementare
 
         // Creazione nodo da aggiungere
         Node newNode = new Node(data);
@@ -143,21 +139,20 @@ public class HashLinkedList<T> implements Iterable<T> {
      * @return una lista con tutti gli hash della lista.
      */
     public ArrayList<String> getAllHashes() {
-        // TODO implementare
 
         // Creazione ArrayList 
         ArrayList<String> arrayHashes = new ArrayList<>();
         
         // Puntatore al nodo head
-        Node node = this.head;
+        Node currentNode = this.head;
 
         // Iterazione su tutti i nodi della lista
-        while (node != null) {
+        while (currentNode != null) {
             // Inserimento hash del nodo corrente nel ArrayList
-            arrayHashes.add(node.hash);
+            arrayHashes.add(currentNode.hash);
             
-            // Puntatore node al nodo seguente
-            node = node.next;
+            // Puntatore currentNode al nodo seguente
+            currentNode = currentNode.next;
         }
 
         return arrayHashes;
@@ -178,21 +173,20 @@ public class HashLinkedList<T> implements Iterable<T> {
      * @return una rappresentazione testuale di tutti i nodi nella lista.
      */
     public String buildNodesString() {
-        // TODO implementare
 
         // Creazione stringBuffer
         StringBuffer nodesString = new StringBuffer();
 
         // Puntatore al nodo head
-        Node node = this.head;
+        Node currentNode = this.head;
 
         // Iterazione sui nodi della lista
-        while (node != null) {
+        while (currentNode != null) {
             // Crea il testo del seguente nodo e lo aggiunge alla stringa nodesString
-            nodesString.append("Dato: " + node.data + ", Hash: " + node.hash + "\n");
+            nodesString.append("Dato: " + currentNode.data + ", Hash: " + currentNode.hash + "\n");
 
-            // Puntatore node al nodo seguente
-            node = node.next;
+            // Puntatore currentNode al nodo seguente
+            currentNode = currentNode.next;
         }
 
         return nodesString.toString();
@@ -206,9 +200,10 @@ public class HashLinkedList<T> implements Iterable<T> {
      * @return true se l'elemento è stato trovato e rimosso, false altrimenti.
      */
     public boolean remove(T data) {
-        // TODO implementare
 
+        // nodo osservato
         Node currentNode = this.head;
+        // nodo precedente a quello attualmente ossvato
         Node previousNode = null;   
 
         // Itera per trovare il nodo da eliminare
@@ -260,15 +255,12 @@ public class HashLinkedList<T> implements Iterable<T> {
      */
     private class Itr implements Iterator<T> {
 
-        // TODO inserire le variabili istanza che si ritengono necessarie
-
         // expectedModCount serve per controllo fail-fast
         private int expectedModCount;
         // ultimo nodo ritornato da next()
         private Node lastReturnedNode;
 
         private Itr() {
-            // TODO implementare
 
             // Setup numero modifiche per fail-fast
             this.expectedModCount = HashLinkedList.this.numeroModifiche;
@@ -277,7 +269,6 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         @Override
         public boolean hasNext() {
-            // TODO implementare
 
             if (this.lastReturnedNode == null)
                 // inizio iterazione, quindi controlla se esiste la testa
@@ -289,15 +280,14 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         @Override
         public T next() {
-            // TODO implementare
 
-            // Controllo se nel mentre è stata modificata la lista (fail-fast)
+            // Controllo se durante l'iterazione è stata modificata la lista (fail-fast)
             if (this.expectedModCount != HashLinkedList.this.numeroModifiche) {
                 throw new ConcurrentModificationException(
                         "Lista modificata");
             }
             
-            // Controllo che ha un elemento successivo
+            // Controllo elemento successivo
             if (!hasNext())
                 throw new NoSuchElementException(
                         "Richiesta next senza nessun elemento successivo");
@@ -315,6 +305,4 @@ public class HashLinkedList<T> implements Iterable<T> {
             }
         }
     }
-
-    // TODO inserire eventuali metodi privati per fini di implementazione
 }

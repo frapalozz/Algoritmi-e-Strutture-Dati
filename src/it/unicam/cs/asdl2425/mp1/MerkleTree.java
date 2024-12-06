@@ -401,8 +401,8 @@ public class MerkleTree<T> {
      * combinando l'hash del branch con l'hash del primo oggetto MerkleProofHash
      * in un nuovo hash, il risultato con il successivo e così via fino
      * all'ultimo oggetto, si possa ottenere l'hash del nodo padre dell'albero.
-     * Nel caso in cui non ci, in determinati step della prova non ci siano due
-     * hash distinti da combinare, l'hash deve comunque ricalcolato sulla base
+     * Nel caso in cui in determinati step della prova non ci siano due
+     * hash distinti da combinare, l'hash deve comunque essere ricalcolato sulla base
      * dell'unico hash disponibile.
      *
      * @param branch
