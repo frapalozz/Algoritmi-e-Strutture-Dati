@@ -29,11 +29,33 @@ public class QuickSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
             // per ordinare la lista vuota o con un solo elemento non faccio niente
             return new SortingAlgorithmResult<>(l, 0);
 
-        int countCompare = 0;
-        E appoggio = null;
-
+        int[] countCompare = {0};
+        
+        quickSort(l, 0, l.size()-1, countCompare);
 
         return new SortingAlgorithmResult<>(l, 0);
+    }
+
+    private void quickSort(List<E> l, int p, int r, int[] countCompare){
+        if(r-p <= 1)
+            return;
+
+        E pivot = l.get(r);
+        int i = p-1;
+        E temp;
+
+        for(int j = p; j <= r; j++){
+            if(i == -1 || l.get(i).compareTo(pivot) < 1){
+                i++;
+                temp = l.get(i);
+                l.set(i, l.get(j));
+                l.set(j, temp);
+            }
+            countCompare[0]++;
+        }
+
+        quickSort(l, p, i, countCompare);
+        quickSort(l, i+1, r, countCompare);
     }
 
     @Override
