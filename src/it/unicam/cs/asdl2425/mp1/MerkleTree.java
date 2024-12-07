@@ -58,6 +58,8 @@ public class MerkleTree<T> {
         }
 
         ArrayList<MerkleNode> momentaryArray = new ArrayList<>();
+        MerkleNode combNode;
+        String hashCombinato;
 
         while (arrayMerkle.size() > 1) {
             for(int i = 0; i < arrayMerkle.size(); i+=2){
@@ -66,17 +68,23 @@ public class MerkleTree<T> {
                     // Abbiamo due nodi per combinare gli hash
 
                     // Creazione hash combinato 
-                    String hashCombinato = HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes());
+                    hashCombinato = HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes());
 
                     // Creazione nodo combinato
-                    MerkleNode combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), arrayMerkle.get(i+1));
+                    combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), arrayMerkle.get(i+1));
 
                     // Aggiunta nodo combinato all'array momentaneo
                     momentaryArray.add(combNode);
                 }
-                else 
+                else {
+                    // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
+                    hashCombinato = HashUtil.computeMD5(arrayMerkle.get(i).getHash().getBytes());
+                    // il nuovo nodo ha solamente un figlio
+                    combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), null);
                     // Il seguente nodo non ha un nodo fratello con cui essere combinato
-                    momentaryArray.add(arrayMerkle.get(i));
+                    momentaryArray.add(combNode);
+                }
+                    
             }
             // Sostituisco la lista con i nuovi nodi combinati
             arrayMerkle = new ArrayList<>(momentaryArray);
@@ -211,11 +219,11 @@ public class MerkleTree<T> {
         // Caso ricorsivo
         // Non è ancora stato trovato la foglia con hash data
         // Cerco nei nodi a sinistra
-        getIndex(node.getLeft(), data, i);
+        if(node.getLeft() != null)
+            getIndex(node.getLeft(), data, i);
         // Cerco nei nodi a destra
-        getIndex(node.getRight(), data, i);
-        
-        return;
+        if(node.getRight() != null)
+            getIndex(node.getRight(), data, i);
     }
 
     /**
@@ -270,8 +278,10 @@ public class MerkleTree<T> {
                 // controllare i suoi nodi figli
                 if(!node.isLeaf()) {
                     // Aggiunta figli del nodo corrente alla lista momentanea
-                    momentaryList.add(node.getLeft());
-                    momentaryList.add(node.getRight());
+                    if(node.getLeft() != null)
+                        momentaryList.add(node.getLeft());
+                    if(node.getRight() != null)
+                        momentaryList.add(node.getRight());
                 }
             }
             // Aggiorno la lista e svuoto la lista momentanea
@@ -301,7 +311,7 @@ public class MerkleTree<T> {
 
         // Se questo albero e quello passato hanno lo stesso hash allora
         // significa che l'albero passato è valido
-        return this.root.getHash().equals(otherTree.root.getHash());
+        return this.root.equals(otherTree.getRoot());
     }
 
     /**
@@ -386,9 +396,10 @@ public class MerkleTree<T> {
         if(!this.validateData(data))
             throw new IllegalArgumentException("data non è parte dell'albero!");
 
-        List<MerkleNode> lista = getPathToNode(this.root, HashUtil.dataToHash(data));
+        List<MerkleNode> path = new ArrayList<>();
+        getPathToRoot(this.root, HashUtil.dataToHash(data), path);
 
-        return merkleProofGenerator(lista, this.getHeight());
+        return merkleProofGenerator(path, this.getHeight());
     }
 
     /**
@@ -417,38 +428,37 @@ public class MerkleTree<T> {
         if(!this.validateBranch(branch))
             throw new IllegalArgumentException("branch non è parte dell'albero!");
         
-        List<MerkleNode> lista = getPathToNode(this.root, branch.getHash());
+        List<MerkleNode> path = new ArrayList<>();
+        getPathToRoot(this.root, branch.getHash(), path);
         
-        return merkleProofGenerator(lista, lista.size()-1);
+        return merkleProofGenerator(path, path.size()-1);
     }
 
     private MerkleProof merkleProofGenerator(List<MerkleNode> listNode, int size) {
 
         MerkleProof merkleProof = new MerkleProof(this.root.getHash(), size);
 
-
-        int i = size - listNode.size();
-        while (i >= 0) {
-            merkleProof.addHash("", false);
-            i--;
-        }
-
-        MerkleNode previous = null;
-        MerkleNode current = null;
+        MerkleNode child = null, parent = null;
         for (MerkleNode merkleNode : listNode) {
-            if(current == null){
-                current = merkleNode;
+            if(parent == null){
+                // Nodo foglia per cui creare il proof
+                parent = merkleNode;
                 continue;
             }
 
-            previous = current;
-            current = merkleNode;
-            
+            // Children
+            child = parent;
+            // Parent
+            parent = merkleNode;
 
-            if(current.getLeft() == previous)
-                merkleProof.addHash(current.getRight().getHash(), false);
+            if(parent.getLeft() == child)
+                // Il figlio sinistro del parent corrisponde al nodo precedente visitato
+                // Quindi il fratello si trova a destra, se il fratello è null allora il suo hash è la stringa vuota
+                merkleProof.addHash( (parent.getRight() != null)? parent.getRight().getHash() : "", false);
             else
-                merkleProof.addHash(current.getLeft().getHash(), true);
+                // Il figlio destro del parent corrisponde al nodo precedente visitato
+                // Quindi il fratello si trova a sinistra, se il fratello è null allora il suo hash è la stringa vuota
+                merkleProof.addHash( (parent.getLeft() != null)? parent.getLeft().getHash() : "", true);
         }
         
         return merkleProof;
@@ -459,35 +469,37 @@ public class MerkleTree<T> {
      * dato nodo. Se l'hash fornito non è presente
      * nell'albero come hash di un discendente, viene restituita una lista vuota.
      */
-    public List<MerkleNode> getPathToNode(MerkleNode currentNode,
-            String dataHash) {
+    public void getPathToRoot(MerkleNode currentNode,
+            String dataHash, List<MerkleNode> path) {
         // TODO implementare
-        List<MerkleNode> lista = new ArrayList<>();
 
         // Caso base 
         if(currentNode.getHash().equals(dataHash)){
-            lista.add(currentNode);
-            return lista;
+            path.add(currentNode);
+            return;
         }
+            
 
         if(currentNode.isLeaf())
-            return lista;
+            return;
             
         // Caso ricorsivo
         // Aggiungi la strada sinistra
-        lista.addAll(getPathToNode(currentNode.getLeft(), dataHash));
-        if(!lista.isEmpty()){
-            lista.add(currentNode);
-            return lista;
+        if(currentNode.getLeft() != null)
+            getPathToRoot(currentNode.getLeft(), dataHash, path);
+        if(!path.isEmpty()){
+            // La lista non è più vuota, quindi la path è a sinistra
+            path.add(currentNode);
+            return;
         }
             
 
         // Aggiungi la strada destra
-        lista.addAll(getPathToNode(currentNode.getRight(), dataHash));
-        if(!lista.isEmpty())
-            lista.add(currentNode);
-
-        return lista;
+        if(currentNode.getRight() != null)
+            getPathToRoot(currentNode.getRight(), dataHash, path);
+        if(!path.isEmpty())
+            // La lista non è più vuota, quindi la path è a destra
+            path.add(currentNode);
     }
     
     // TODO inserire eventuali metodi privati per fini di implementazione 

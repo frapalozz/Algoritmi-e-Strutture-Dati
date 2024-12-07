@@ -222,11 +222,6 @@ public class MerkleProof {
         for (MerkleProofHash merkleProofHash : this.proof) {
             // Calcolo hash combinando l'ultimo hash calcolato con il successivo hash del seguente nodo MerkleProofHash
 
-            if(merkleProofHash.getHash().equals(""))
-                // Il seguente nodo non ha un hash (nodo fantasma)
-                // Quindi l'hash calcolato non varia
-                continue;
-
             if(merkleProofHash.isLeft())
                 // Calcola nuovo hash combinando hash calcolato a destra del prossimo hash nella lista proof
                 calculatedHash = HashUtil.computeMD5( (merkleProofHash.getHash() + calculatedHash).getBytes() );
