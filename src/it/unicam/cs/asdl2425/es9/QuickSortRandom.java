@@ -32,30 +32,26 @@ public class QuickSortRandom<E extends Comparable<E>>
         return new SortingAlgorithmResult<>(l, randomQuickSort(l, 0, l.size()-1));
     }
 
+    private void random(List<E> unsortedList, int left, int right){
+
+        int pivot = randomGenerator.nextInt(right-left)+left;
+
+        E temp = unsortedList.get(pivot);
+        unsortedList.set(pivot, unsortedList.get(right));
+        unsortedList.set(right, temp);
+    }
+
     private int randomQuickSort(List<E> unsortedList, int left, int right){
-        if(left >= right){
+        if(left >= right)
             return 0;
-        }
 
-        int countCompare = 0;
-        int rightVal = randomGenerator.nextInt(right+1);
-        
-        if(rightVal <= left)
-            rightVal = left+1;
-
-        E pivot = unsortedList.get(rightVal);
+        random(unsortedList, left, right);
+        E pivot = unsortedList.get(right);
         int i = left-1;
         E temp;
+        int countCompare = 0;
 
-        for(int j = rightVal+1; j <= right; j++) {
-            if(unsortedList.get(j).compareTo(pivot) < 1){
-                temp = unsortedList.get(j);
-                unsortedList.set(j, unsortedList.get(rightVal));
-                unsortedList.set(rightVal, temp);
-                rightVal = j;
-            }
-        }
-        for(int j = left; j < rightVal; j++){
+        for(int j = left; j < right; j++){
             if(unsortedList.get(j).compareTo(pivot) < 1){
                 i++;
                 temp = unsortedList.get(i);
@@ -66,14 +62,10 @@ public class QuickSortRandom<E extends Comparable<E>>
         }
         i++;
         temp = unsortedList.get(i);
-        unsortedList.set(i, unsortedList.get(rightVal));
-        unsortedList.set(rightVal, temp);
-        
-        
+        unsortedList.set(i, unsortedList.get(right));
+        unsortedList.set(right, temp);
 
-        // Sinistra
         countCompare += randomQuickSort(unsortedList, left, i-1);
-        // Destra
         countCompare += randomQuickSort(unsortedList, i+1, right);
 
         return countCompare;
