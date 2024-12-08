@@ -221,8 +221,8 @@ public class MerkleTree<T> {
         // Caso ricorsivo
         // Non è ancora stato trovato la foglia con hash data
         // Cerco nei nodi a sinistra
-        if(node.getLeft() != null)
-            getIndex(node.getLeft(), data, i);
+        getIndex(node.getLeft(), data, i);
+
         // Cerco nei nodi a destra
         if(node.getRight() != null)
             getIndex(node.getRight(), data, i);
@@ -282,13 +282,9 @@ public class MerkleTree<T> {
                     list.add( list.remove(0).getRight() );
                 }
 
-                else if(list.get(0).getLeft() != null)
+                else
                     // Solo figlio sinistro
                     list.add( list.remove(0).getLeft() );
-
-                else
-                    // Solo figlio destro
-                    list.add( list.remove(0).getRight() );
             }
             else
                 // Rimozione foglia
@@ -378,10 +374,12 @@ public class MerkleTree<T> {
             findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft, currentHeight-1, invalidIndices);
 
         // Lato destro diverso
-        if(!node.getRight().getHash().equals(otherNode.getRight().getHash()))
-            // Aumento di nodi foglia alla sua sinistra
-            // L'aumento corrisponde a 2^(altezza da nodo figlio)
-            findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesOnLeft+(int)Math.pow(2, currentHeight), currentHeight-1, invalidIndices);
+        if(node.getRight() != null){
+            if(!node.getRight().getHash().equals(otherNode.getRight().getHash()))
+                // Aumento di nodi foglia alla sua sinistra
+                // L'aumento corrisponde a 2^(altezza da nodo figlio)
+                findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesOnLeft+(int)Math.pow(2, currentHeight), currentHeight-1, invalidIndices);
+        }
         
     }
 
@@ -482,7 +480,7 @@ public class MerkleTree<T> {
             else
                 // Il figlio destro del parent corrisponde al nodo precedente visitato
                 // Quindi il fratello si trova a sinistra, se il fratello è null allora il suo hash è la stringa vuota
-                merkleProof.addHash( (parent.getLeft() != null)? parent.getLeft().getHash() : "", true);
+                merkleProof.addHash( parent.getLeft().getHash(), true);
         }
         
         return merkleProof;
@@ -507,9 +505,8 @@ public class MerkleTree<T> {
             
 
         // Caso ricorsivo
-        if(currentNode.getLeft() != null)
-            // Aggiungi la strada sinistra
-            getPathToRoot(currentNode.getLeft(), dataHash, path);
+        // Aggiungi la strada sinistra
+        getPathToRoot(currentNode.getLeft(), dataHash, path);
         if(!path.isEmpty()){
             // La lista non è più vuota, quindi la path è a sinistra
             path.add(currentNode);
@@ -520,6 +517,7 @@ public class MerkleTree<T> {
         if(currentNode.getRight() != null)
             // Aggiungi la strada destra
             getPathToRoot(currentNode.getRight(), dataHash, path);
+            
         if(!path.isEmpty())
             // La lista non è più vuota, quindi la path è a destra
             path.add(currentNode);
