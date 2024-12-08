@@ -79,6 +79,7 @@ public class MerkleTree<T> {
                 else{
                     // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
                     parentHash = HashUtil.computeMD5( nodesLayer.get(0).getHash().getBytes() );
+                    
                     // il nuovo padre ha solamente un figlio
                     parentNode = new MerkleNode(parentHash, nodesLayer.remove(0), null);
                     
