@@ -59,16 +59,14 @@ public class MerkleTree<T> {
         MerkleNode combinedNode; // Nodo combinato dei due figli
         String hashCombinato; // Hash combinato dei due figli del nodo
         int nodesCurrentLevel = nodesLayer.size(); // Numero di nodi nel livello corrente
-        int nodesNextLevel; // Numero di nodi nel livello superiore
 
         while (nodesCurrentLevel > 1) {
-            // Calcola quantita di nodi nel livello superiore
-            nodesNextLevel = (int) Math.ceil( (double)(nodesCurrentLevel)/2 );
-            
-            for(int i = 0; i < nodesNextLevel; i++){
+            // Ancora non si è arrivati al root
+
+            while (nodesCurrentLevel > 0) {
                 // Iterazione per la creazione dei nodi del livello superiore
 
-                if(nodesCurrentLevel-i*2 > 1){
+                if(nodesCurrentLevel > 1){
                     // Abbiamo due nodi per combinare gli hash
                     // Creazione hash combinato 
                     hashCombinato = HashUtil.computeMD5((nodesLayer.get(0).getHash() + nodesLayer.get(1).getHash()).getBytes());
@@ -78,6 +76,7 @@ public class MerkleTree<T> {
 
                     // Aggiunta nodo combinato
                     nodesLayer.add(combinedNode);
+                    nodesCurrentLevel-=2;
                 }
                 else{
                     // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
@@ -86,8 +85,8 @@ public class MerkleTree<T> {
                     combinedNode = new MerkleNode(hashCombinato, nodesLayer.remove(0), null);
                     // Il seguente nodo non ha un nodo fratello con cui essere combinato
                     nodesLayer.add(combinedNode);
+                    nodesCurrentLevel--;
                 }
-
             }
 
             nodesCurrentLevel = nodesLayer.size();
