@@ -2,8 +2,6 @@ package it.unicam.cs.asdl2425.mp1;
 
 import java.util.*;
 
-// TODO inserire solo gli import della Java SE che si ritengono necessari
-
 /**
  * Un Merkle Tree, noto anche come hash tree binario, è una struttura dati per
  * verificare in modo efficiente l'integrità e l'autenticità dei dati
@@ -43,13 +41,13 @@ public class MerkleTree<T> {
      *                                      se la lista è null o vuota.
      */
     public MerkleTree(HashLinkedList<T> hashList) {
-        // TODO implementare
+        
         if(hashList == null)
             throw new IllegalArgumentException("hashList null!");
         if(hashList.getSize() == 0)
             throw new IllegalArgumentException("hashList vuota!");
 
-        // Lista contenete i nodi partendo dall'ultimo livello
+        // Lista contenete i nodi di un certo livello
         List<MerkleNode> nodesLayer = new LinkedList<>();
         // Generazione nodi foglia
         for (String hash : hashList.getAllHashes()) {
@@ -120,9 +118,8 @@ public class MerkleTree<T> {
      * @return l'altezza dell'albero.
      */
     public int getHeight() {
-        // TODO implementare
 
-        // Altezza = log_2(width)
+        // Altezza = log_2(nodi foglia)
         return (int) Math.ceil(Math.log(this.width) / Math.log(2));
     }
 
@@ -149,7 +146,7 @@ public class MerkleTree<T> {
      *                                      dell'albero.
      */
     public int getIndexOfData(MerkleNode branch, T data) {
-        // TODO implementare
+        
         if(branch == null)
             throw new IllegalArgumentException("branch null!");
         if(!(validateBranch(branch)))
@@ -159,8 +156,9 @@ public class MerkleTree<T> {
 
         // Hash di data
         String dataHash = HashUtil.dataToHash(data);
-        
+        // i[0] = indice di data, i[1] = indice nodo foglia da visitare
         int[] i = {-1, 0};
+
         // trova indice di data
         getIndex(branch, dataHash, i);
 
@@ -182,7 +180,7 @@ public class MerkleTree<T> {
      *                                      se il dato è null.
      */
     public int getIndexOfData(T data) {
-        // TODO implementare
+        
         if(data == null)
             throw new IllegalArgumentException("data null!");
         
@@ -238,7 +236,6 @@ public class MerkleTree<T> {
      *         altrimenti.
      */
     public boolean validateData(T data) {
-        // TODO implementare
         
         // Se data è presente nell'albero, allora il suo indice è più grande di 1
         return getIndexOfData(data) > -1;
@@ -256,7 +253,6 @@ public class MerkleTree<T> {
      * @return true se il sottoalbero di Merkle è valido; false altrimenti.
      */
     public boolean validateBranch(MerkleNode branch) {
-        // TODO implementare
 
         // Hash del nodo da validare
         String hash = branch.getHash();
@@ -274,23 +270,22 @@ public class MerkleTree<T> {
             if(list.get(0).getHash().equals(hash))
                 return true;
 
-            // Se non è nodo foglia allora nella successiva iterazione si andrà a 
-            // controllare i suoi nodi figli
+            
             if(!list.get(0).isLeaf()) {
                 // Aggiunta figli del nodo corrente alla lista
                 if(list.get(0).getLeft() != null && list.get(0).getRight() != null){
                     // Figlio destro e sinistro
-                    list.add(list.get(0).getLeft());
-                    list.add(list.remove(0).getRight());
+                    list.add( list.get(0).getLeft() );
+                    list.add( list.remove(0).getRight() );
                 }
 
                 else if(list.get(0).getLeft() != null)
                     // Solo figlio sinistro
-                    list.add(list.remove(0).getLeft());
+                    list.add( list.remove(0).getLeft() );
 
                 else
                     // Solo figlio destro
-                    list.add(list.remove(0).getRight());
+                    list.add( list.remove(0).getRight() );
             }
             else
                 // Rimozione foglia
@@ -314,7 +309,7 @@ public class MerkleTree<T> {
      *                                      se l'albero fornito è null.
      */
     public boolean validateTree(MerkleTree<T> otherTree) {
-        // TODO implementare
+        
         if(otherTree == null)
             throw new IllegalArgumentException("otherTree null!");
 
@@ -344,7 +339,7 @@ public class MerkleTree<T> {
      * @return l'insieme di indici degli elementi di dati non validi.
      */
     public Set<Integer> findInvalidDataIndices(MerkleTree<T> otherTree) {
-        // TODO implementare
+        
         if(otherTree == null)
             throw new IllegalArgumentException("otherTree null!");
         if(this.width != otherTree.getWidth())
@@ -352,12 +347,16 @@ public class MerkleTree<T> {
 
         // Set di indici non validi
         Set<Integer> invalidDataSet = new HashSet<>();
-        // Trova tutti gli indici non validi
+        // Trova tutti gli indici non validi ricorsivamente
         findInvalidDataIndicesRecursive(this.root, otherTree.getRoot(), 0, this.getHeight()-1, invalidDataSet);
 
         return invalidDataSet;
     }
 
+    /*
+     * Trova ricorsivamente gli indici degli elementi di dati non validi in un
+     * dato Merkle Tree, secondo questo Merkle Tree
+     */
     private void findInvalidDataIndicesRecursive(MerkleNode node,
     MerkleNode otherNode, int nodesOnLeft, int currentHeight, 
     Set<Integer> invalidIndices) {
@@ -372,10 +371,13 @@ public class MerkleTree<T> {
 
         // Lato sinistro diverso
         if(!node.getLeft().getHash().equals(otherNode.getLeft().getHash())) 
+            // Nessun aumento di nodi foglia alla sua sinistra
             findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft, currentHeight-1, invalidIndices);
 
         // Lato destro diverso
         if(!node.getRight().getHash().equals(otherNode.getRight().getHash()))
+            // Aumento di nodi foglia alla sua sinistra
+            // L'aumento corrisponde a 2^(altezza da nodo figlio)
             findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesOnLeft+(int)Math.pow(2, currentHeight), currentHeight-1, invalidIndices);
         
     }
@@ -399,15 +401,18 @@ public class MerkleTree<T> {
      *                                      dell'albero.
      */
     public MerkleProof getMerkleProof(T data) {
-        // TODO implementare
+        
         if(data == null)
             throw new IllegalArgumentException("data null!");
         if(!this.validateData(data))
             throw new IllegalArgumentException("data non è parte dell'albero!");
 
+        // Lista dei nodi da nodo foglia a root
         List<MerkleNode> path = new ArrayList<>();
+        // Generazione path
         getPathToRoot(this.root, HashUtil.dataToHash(data), path);
 
+        // Generazione MerkleProof
         return merkleProofGenerator(path, this.getHeight());
     }
 
@@ -431,24 +436,31 @@ public class MerkleTree<T> {
      *                                      dell'albero.
      */
     public MerkleProof getMerkleProof(MerkleNode branch) {
-        // TODO implementare
+        
         if(branch == null)
             throw new IllegalArgumentException("branch null!");
         if(!this.validateBranch(branch))
             throw new IllegalArgumentException("branch non è parte dell'albero!");
         
+        // Lista dei nodi da branch a root
         List<MerkleNode> path = new ArrayList<>();
+        // Generazione path
         getPathToRoot(this.root, branch.getHash(), path);
         
+        // Generazione MerkleProof
         return merkleProofGenerator(path, path.size()-1);
     }
 
-    private MerkleProof merkleProofGenerator(List<MerkleNode> listNode, int size) {
+    /*
+     * Genera la prova di Merkle per un dato nodo
+     */
+    private MerkleProof merkleProofGenerator(List<MerkleNode> path, int size) {
 
         MerkleProof merkleProof = new MerkleProof(this.root.getHash(), size);
 
         MerkleNode child = null, parent = null;
-        for (MerkleNode merkleNode : listNode) {
+
+        for (MerkleNode merkleNode : path) {
             if(parent == null){
                 // Nodo foglia per cui creare il proof
                 parent = merkleNode;
@@ -480,19 +492,20 @@ public class MerkleTree<T> {
      */
     public void getPathToRoot(MerkleNode currentNode,
             String dataHash, List<MerkleNode> path) {
-        // TODO implementare
 
         // Caso base 
         if(currentNode.getHash().equals(dataHash)){
+            // hash nodo foglia uguale a hash da cercare
             path.add(currentNode);
             return;
         }
         if(currentNode.isLeaf())
             return;
             
+
         // Caso ricorsivo
-        // Aggiungi la strada sinistra
         if(currentNode.getLeft() != null)
+            // Aggiungi la strada sinistra
             getPathToRoot(currentNode.getLeft(), dataHash, path);
         if(!path.isEmpty()){
             // La lista non è più vuota, quindi la path è a sinistra
@@ -501,13 +514,11 @@ public class MerkleTree<T> {
         }
             
 
-        // Aggiungi la strada destra
         if(currentNode.getRight() != null)
+            // Aggiungi la strada destra
             getPathToRoot(currentNode.getRight(), dataHash, path);
         if(!path.isEmpty())
             // La lista non è più vuota, quindi la path è a destra
             path.add(currentNode);
     }
-    
-    // TODO inserire eventuali metodi privati per fini di implementazione 
 }
