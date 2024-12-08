@@ -240,6 +240,7 @@ public class MerkleTree<T> {
     public boolean validateData(T data) {
         // TODO implementare
         
+        // Se data è presente nell'albero, allora il suo indice è più grande di 1
         return getIndexOfData(data) > -1;
     }
 
@@ -264,9 +265,10 @@ public class MerkleTree<T> {
         List<MerkleNode> list = new LinkedList<>();
         list.add(this.root);
 
-        // Finchè la lista list ha qualche nodo allora bisogna controllare se un hash corrisponde a
-        // quello del branch
+
         while(!list.isEmpty()) {
+            // Finchè la lista list ha qualche nodo allora bisogna controllare se un hash corrisponde a
+            // quello del branch
 
             // Branch trovato
             if(list.get(0).getHash().equals(hash))
@@ -277,15 +279,21 @@ public class MerkleTree<T> {
             if(!list.get(0).isLeaf()) {
                 // Aggiunta figli del nodo corrente alla lista
                 if(list.get(0).getLeft() != null && list.get(0).getRight() != null){
+                    // Figlio destro e sinistro
                     list.add(list.get(0).getLeft());
                     list.add(list.remove(0).getRight());
                 }
+
                 else if(list.get(0).getLeft() != null)
+                    // Solo figlio sinistro
                     list.add(list.remove(0).getLeft());
+
                 else
+                    // Solo figlio destro
                     list.add(list.remove(0).getRight());
             }
             else
+                // Rimozione foglia
                 list.remove(0);
         }
 
