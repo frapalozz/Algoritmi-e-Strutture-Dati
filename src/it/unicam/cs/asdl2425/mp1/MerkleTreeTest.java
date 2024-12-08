@@ -86,9 +86,12 @@ class MerkleTreeTest {
 
     private HashLinkedList<Boolean> hashList3;
 
+    private HashLinkedList<Integer> hashList4;
+
     private MerkleTree<String> merkleTree1;
     private MerkleTree<Long> merkleTree2;
     private MerkleTree<Boolean> merkleTree3;
+    private MerkleTree<Integer> merkleTree4;
 
     @BeforeEach
     void setUp() {
@@ -113,6 +116,10 @@ class MerkleTreeTest {
 
         //Creazione del MerkleTree
         merkleTree3 = new MerkleTree<>(hashList3);
+
+        hashList4 = new HashLinkedList<>();
+        hashList4.addAtTail(5);
+        merkleTree4 = new MerkleTree<>(hashList4);
 
     }
 
@@ -160,6 +167,7 @@ class MerkleTreeTest {
         int expectedHeight = 2; // Con 4 foglie, l'altezza è log2(4) = 2
         assertEquals(expectedHeight, merkleTree1.getHeight(),
                 "L'altezza dell'albero non è corretta.");
+        assertEquals(0, merkleTree4.getHeight());
     }
 
     @Test
@@ -429,6 +437,9 @@ class MerkleTreeTest {
         MerkleProof proof = merkleTree1.getMerkleProof("Alice paga Bob");
         assertNotNull(proof, "La prova di Merkle non dovrebbe essere null.");
         assertEquals(2, proof.getLength(), "La prova di Merkle dovrebbe avere dimensione 2.");
+        proof = merkleTree4.getMerkleProof(5);
+        assertNotNull(proof);
+        assertEquals(0, proof.getLength());
     }
 
     @Test

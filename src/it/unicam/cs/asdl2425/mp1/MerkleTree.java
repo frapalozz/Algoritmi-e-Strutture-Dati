@@ -50,48 +50,50 @@ public class MerkleTree<T> {
             throw new IllegalArgumentException("hashList vuota!");
 
         // Lista contenete i nodi partendo dall'ultimo livello
-        ArrayList<MerkleNode> arrayMerkle = new ArrayList<>();
-
-        // Creazione nodi foglia
+        List<MerkleNode> nodesLayer = new LinkedList<>();
+        // Generazione nodi foglia
         for (String hash : hashList.getAllHashes()) {
-            arrayMerkle.add(new MerkleNode(hash));
+            nodesLayer.add( new MerkleNode(hash) );
         }
 
-        ArrayList<MerkleNode> momentaryArray = new ArrayList<>();
-        MerkleNode combNode;
-        String hashCombinato;
+        MerkleNode combinedNode; // Nodo combinato dei due figli
+        String hashCombinato; // Hash combinato dei due figli del nodo
+        int nodesCurrentLevel = nodesLayer.size(); // Numero di nodi nel livello corrente
+        int nodesNextLevel; // Numero di nodi nel livello superiore
 
-        while (arrayMerkle.size() > 1) {
-            for(int i = 0; i < arrayMerkle.size(); i+=2){
-                
-                if(arrayMerkle.size() > i+1){
+        while (nodesCurrentLevel > 1) {
+            // Calcola quantita di nodi nel livello superiore
+            nodesNextLevel = (int) Math.ceil( (double)(nodesCurrentLevel)/2 );
+            
+            for(int i = 0; i < nodesNextLevel; i++){
+                // Iterazione per la creazione dei nodi del livello superiore
+
+                if(nodesCurrentLevel-i*2 > 1){
                     // Abbiamo due nodi per combinare gli hash
-
                     // Creazione hash combinato 
-                    hashCombinato = HashUtil.computeMD5((arrayMerkle.get(i).getHash() + arrayMerkle.get(i+1).getHash()).getBytes());
+                    hashCombinato = HashUtil.computeMD5((nodesLayer.get(0).getHash() + nodesLayer.get(1).getHash()).getBytes());
 
                     // Creazione nodo combinato
-                    combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), arrayMerkle.get(i+1));
+                    combinedNode = new MerkleNode(hashCombinato, nodesLayer.remove(0), nodesLayer.remove(0));
 
-                    // Aggiunta nodo combinato all'array momentaneo
-                    momentaryArray.add(combNode);
+                    // Aggiunta nodo combinato
+                    nodesLayer.add(combinedNode);
                 }
-                else {
+                else{
                     // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
-                    hashCombinato = HashUtil.computeMD5(arrayMerkle.get(i).getHash().getBytes());
+                    hashCombinato = HashUtil.computeMD5( nodesLayer.get(0).getHash().getBytes() );
                     // il nuovo nodo ha solamente un figlio
-                    combNode = new MerkleNode(hashCombinato, arrayMerkle.get(i), null);
+                    combinedNode = new MerkleNode(hashCombinato, nodesLayer.remove(0), null);
                     // Il seguente nodo non ha un nodo fratello con cui essere combinato
-                    momentaryArray.add(combNode);
+                    nodesLayer.add(combinedNode);
                 }
-                    
+
             }
-            // Sostituisco la lista con i nuovi nodi combinati
-            arrayMerkle = new ArrayList<>(momentaryArray);
-            momentaryArray.clear();
+
+            nodesCurrentLevel = nodesLayer.size();
         }
 
-        this.root = arrayMerkle.get(0);
+        this.root = nodesLayer.get(0);
         this.width = hashList.getSize();
     }
 
@@ -260,35 +262,35 @@ public class MerkleTree<T> {
         String hash = branch.getHash();
 
         // Creazione lista contenente i nodi in cui cercare partendo dal root
-        List<MerkleNode> list = new ArrayList<>();
+        List<MerkleNode> list = new LinkedList<>();
         list.add(this.root);
 
-        // Creazione lista contenente i nodi di 1 livello più in basso
-        List<MerkleNode> momentaryList = new ArrayList<>();
-
-        // Finchè la lista list ha qualche nodo allora bisogna vedere se un hash corrisponde a
+        // Finchè la lista list ha qualche nodo allora bisogna controllare se un hash corrisponde a
         // quello del branch
         while(!list.isEmpty()) {
-            for (MerkleNode node : list) {
-                // Hash trovato
-                if(node.getHash().equals(hash))
-                    return true;
-                
-                // Se non è nodo foglia allora nella successiva iterazione si andrà a 
-                // controllare i suoi nodi figli
-                if(!node.isLeaf()) {
-                    // Aggiunta figli del nodo corrente alla lista momentanea
-                    if(node.getLeft() != null)
-                        momentaryList.add(node.getLeft());
-                    if(node.getRight() != null)
-                        momentaryList.add(node.getRight());
+
+            // Branch trovato
+            if(list.get(0).getHash().equals(hash))
+                return true;
+
+            // Se non è nodo foglia allora nella successiva iterazione si andrà a 
+            // controllare i suoi nodi figli
+            if(!list.get(0).isLeaf()) {
+                // Aggiunta figli del nodo corrente alla lista
+                if(list.get(0).getLeft() != null && list.get(0).getRight() != null){
+                    list.add(list.get(0).getLeft());
+                    list.add(list.remove(0).getRight());
                 }
+                else if(list.get(0).getLeft() != null)
+                    list.add(list.remove(0).getLeft());
+                else
+                    list.add(list.remove(0).getRight());
             }
-            // Aggiorno la lista e svuoto la lista momentanea
-            list = new LinkedList<>(momentaryList);
-            momentaryList.clear();
+            else
+                list.remove(0);
         }
-        
+
+        // Branch non trovato
         return false;
     }
 
@@ -478,8 +480,6 @@ public class MerkleTree<T> {
             path.add(currentNode);
             return;
         }
-            
-
         if(currentNode.isLeaf())
             return;
             
