@@ -54,8 +54,8 @@ public class MerkleTree<T> {
             nodesLayer.add( new MerkleNode(hash) );
         }
 
-        MerkleNode combinedNode; // Nodo combinato dei due figli
-        String hashCombinato; // Hash combinato dei due figli del nodo
+        MerkleNode parentNode; // Nodo combinato dei due figli
+        String parentHash; // Hash combinato dei due figli del nodo
         int nodesCurrentLevel = nodesLayer.size(); // Numero di nodi nel livello corrente
 
         while (nodesCurrentLevel > 1) {
@@ -67,26 +67,28 @@ public class MerkleTree<T> {
                 if(nodesCurrentLevel > 1){
                     // Abbiamo due nodi per combinare gli hash
                     // Creazione hash combinato 
-                    hashCombinato = HashUtil.computeMD5((nodesLayer.get(0).getHash() + nodesLayer.get(1).getHash()).getBytes());
+                    parentHash = HashUtil.computeMD5((nodesLayer.get(0).getHash() + nodesLayer.get(1).getHash()).getBytes());
 
-                    // Creazione nodo combinato
-                    combinedNode = new MerkleNode(hashCombinato, nodesLayer.remove(0), nodesLayer.remove(0));
+                    // Creazione nodo padre
+                    parentNode = new MerkleNode(parentHash, nodesLayer.remove(0), nodesLayer.remove(0));
 
-                    // Aggiunta nodo combinato
-                    nodesLayer.add(combinedNode);
+                    // Aggiunta nodo padre
+                    nodesLayer.add(parentNode);
                     nodesCurrentLevel-=2;
                 }
                 else{
                     // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
-                    hashCombinato = HashUtil.computeMD5( nodesLayer.get(0).getHash().getBytes() );
-                    // il nuovo nodo ha solamente un figlio
-                    combinedNode = new MerkleNode(hashCombinato, nodesLayer.remove(0), null);
-                    // Il seguente nodo non ha un nodo fratello con cui essere combinato
-                    nodesLayer.add(combinedNode);
+                    parentHash = HashUtil.computeMD5( nodesLayer.get(0).getHash().getBytes() );
+                    // il nuovo padre ha solamente un figlio
+                    parentNode = new MerkleNode(parentHash, nodesLayer.remove(0), null);
+                    
+                    // Aggiunta nodo padre
+                    nodesLayer.add(parentNode);
                     nodesCurrentLevel--;
                 }
             }
 
+            // Quantità di nodi al livello corrente
             nodesCurrentLevel = nodesLayer.size();
         }
 
