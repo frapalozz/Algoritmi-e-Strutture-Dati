@@ -49,7 +49,7 @@ public class MerkleTree<T> {
 
         // Lista contenete i nodi di un certo livello
         List<MerkleNode> nodesLayer = new LinkedList<>();
-        // Generazione nodi foglia
+        // Generazione ultimo livello, nodi foglia
         for (String hash : hashList.getAllHashes()) {
             nodesLayer.add( new MerkleNode(hash) );
         }
@@ -74,6 +74,8 @@ public class MerkleTree<T> {
 
                     // Aggiunta nodo padre
                     nodesLayer.add(parentNode);
+
+                    // Togli due nodi al livello corrente
                     nodesCurrentLevel-=2;
                 }
                 else{
@@ -85,6 +87,8 @@ public class MerkleTree<T> {
                     
                     // Aggiunta nodo padre
                     nodesLayer.add(parentNode);
+
+                    // Togli un nodo al livello corrente
                     nodesCurrentLevel--;
                 }
             }
@@ -122,7 +126,7 @@ public class MerkleTree<T> {
      */
     public int getHeight() {
 
-        // Altezza = log_2(nodi foglia)
+        // Altezza = log_2(nodi foglia), dato che è un albero bilanciato
         return (int) Math.ceil(Math.log(this.width) / Math.log(2));
     }
 
@@ -275,7 +279,7 @@ public class MerkleTree<T> {
 
             
             if(!list.get(0).isLeaf()) {
-                // Aggiunta figli del nodo corrente alla lista
+                // Aggiunta figli del nodo corrente alla lista, e rimuovi il seguente nodo
                 if(list.get(0).getLeft() != null && list.get(0).getRight() != null){
                     // Figlio destro e sinistro
                     list.add( list.get(0).getLeft() );
@@ -365,6 +369,7 @@ public class MerkleTree<T> {
             if(!node.getHash().equals(otherNode.getHash()))
                 // Aggiunta indice a set
                 invalidIndices.add(nodesOnLeft);
+
             return;
         }
 
@@ -468,10 +473,8 @@ public class MerkleTree<T> {
                 continue;
             }
 
-            // Children
-            child = parent;
-            // Parent
-            parent = merkleNode;
+            child = parent;      // Children
+            parent = merkleNode; // Parent
 
             if(parent.getLeft() == child)
                 // Il figlio sinistro del parent corrisponde al nodo precedente visitato
@@ -479,7 +482,7 @@ public class MerkleTree<T> {
                 merkleProof.addHash( (parent.getRight() != null)? parent.getRight().getHash() : "", false);
             else
                 // Il figlio destro del parent corrisponde al nodo precedente visitato
-                // Quindi il fratello si trova a sinistra, se il fratello è null allora il suo hash è la stringa vuota
+                // Quindi il fratello si trova a sinistra
                 merkleProof.addHash( parent.getLeft().getHash(), true);
         }
         
