@@ -69,7 +69,7 @@ public class MerkleTree<T> {
                     // Creazione hash combinato 
                     parentHash = HashUtil.computeMD5((nodesLayer.get(0).getHash() + nodesLayer.get(1).getHash()).getBytes());
 
-                    // Creazione nodo padre
+                    // Creazione nodo padre e rimozione dei suoi nodi figli
                     parentNode = new MerkleNode(parentHash, nodesLayer.remove(0), nodesLayer.remove(0));
 
                     // Aggiunta nodo padre
@@ -82,7 +82,7 @@ public class MerkleTree<T> {
                     // in questo caso l'hash combinato è il nuovo hash calcolato dall'hash del seguente nodo
                     parentHash = HashUtil.computeMD5( nodesLayer.get(0).getHash().getBytes() );
                     
-                    // il nuovo padre ha solamente un figlio
+                    // Creazione nodo padre e rimozione figlio
                     parentNode = new MerkleNode(parentHash, nodesLayer.remove(0), null);
                     
                     // Aggiunta nodo padre
@@ -203,12 +203,11 @@ public class MerkleTree<T> {
      */
     private void getIndex(MerkleNode node, String data, int[] i){
 
+        // Caso base
         if(i[0] == i[1])
             // è stato trovato l'indice
             return;
-
         if(node.isLeaf()){
-            // Caso base
             // Il seguente nodo è una foglia
 
             if(data.equals(node.getHash())) {
@@ -280,7 +279,7 @@ public class MerkleTree<T> {
 
             
             if(!list.get(0).isLeaf()) {
-                // Aggiunta figli del nodo corrente alla lista, e rimuovi il seguente nodo
+                // Aggiunta figli del nodo corrente alla lista, e rimozione del nodo
                 if(list.get(0).getLeft() != null && list.get(0).getRight() != null){
                     // Figlio destro e sinistro
                     list.add( list.get(0).getLeft() );
@@ -414,7 +413,7 @@ public class MerkleTree<T> {
         if(!this.validateData(data))
             throw new IllegalArgumentException("data non è parte dell'albero!");
 
-        // Lista dei nodi da nodo foglia a root
+        // Lista dei nodi. [Foglia -> ... -> Root]
         List<MerkleNode> path = new ArrayList<>();
         // Generazione path
         getPathToRoot(this.root, HashUtil.dataToHash(data), path);
@@ -449,7 +448,7 @@ public class MerkleTree<T> {
         if(!this.validateBranch(branch))
             throw new IllegalArgumentException("branch non è parte dell'albero!");
         
-        // Lista dei nodi da branch a root
+        // Lista dei nodi. [Branch -> ... -> Root]
         List<MerkleNode> path = new ArrayList<>();
         // Generazione path
         getPathToRoot(this.root, branch.getHash(), path);
@@ -465,6 +464,7 @@ public class MerkleTree<T> {
 
         MerkleProof merkleProof = new MerkleProof(this.root.getHash(), size);
 
+        // Nodo figlio e nodo padre
         MerkleNode child = null, parent = null;
 
         for (MerkleNode merkleNode : path) {
