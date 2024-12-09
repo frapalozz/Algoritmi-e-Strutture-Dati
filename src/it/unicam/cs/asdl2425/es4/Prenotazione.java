@@ -123,7 +123,6 @@ public class Prenotazione implements Comparable<Prenotazione> {
      */
     @Override
     public int compareTo(Prenotazione o) {
-        // TODO implementare
         if(o == null)
             throw new NullPointerException("La prenotazione passata è null!");
         

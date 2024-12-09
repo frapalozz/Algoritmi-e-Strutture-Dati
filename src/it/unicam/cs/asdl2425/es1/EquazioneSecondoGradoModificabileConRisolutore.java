@@ -51,7 +51,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      */
     public EquazioneSecondoGradoModificabileConRisolutore(double a, double b,
             double c) {
-        // TODO implementare 
 
         if (Math.abs(a) < EPSILON) // controllo se uguale a zero
             throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente a uguale a zero");
@@ -81,7 +80,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *                                      se il nuovo valore è zero
      */
     public void setA(double a) {
-        // TODO implementare
 
         if(Math.abs(a) < EPSILON) throw new IllegalArgumentException("L'equazione di secondo grado non può avere coefficiente = 0!");
 
@@ -105,7 +103,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *              il nuovo valore del parametro b
      */
     public void setB(double b) {
-        // TODO implementare 
 
         this.b = b;
         this.solved = false;
@@ -126,7 +123,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *              il nuovo valore del parametro c
      */
     public void setC(double c) {
-        // TODO implementare 
 
         this.c = c;
         this.solved = false;
@@ -147,7 +143,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      * risolta di nuovo.
      */
     public void solve() {
-        // TODO implementare
 
         if(!solved) {
             double delta = b * b - 4 * a * c;
@@ -184,7 +179,6 @@ public class EquazioneSecondoGradoModificabileConRisolutore {
      *                                   almeno uno dei parametri
      */
     public SoluzioneEquazioneSecondoGrado getSolution() {
-        // TODO implementare
 
         if(this.solved) {
             return this.lastSolution;

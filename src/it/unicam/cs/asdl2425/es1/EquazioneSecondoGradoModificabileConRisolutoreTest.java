@@ -51,7 +51,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testSetA() {
-        // TODO implementare
         double x = 5;
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, 1);
         e1.setA(x);
@@ -71,7 +70,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testGetB() {
-        // TODO implementare
         double x = 5;
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, x, 1);
         /* controllo che il valore restituito sia quello che ho messo all'interno
@@ -82,7 +80,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testSetB() {
-        // TODO implementare
         double x = 5;
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, 1);
         e1.setB(x);
@@ -97,7 +94,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testGetC() {
-        // TODO implementare
         double x = 5;
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, x);
         /* controllo che il valore restituito sia quello che ho messo all'interno
@@ -108,7 +104,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testSetC() {
-        // TODO implementare
         double x = 5;
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, 1);
         e1.setC(x);
@@ -123,7 +118,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testIsSolved() {
-        // TODO implementare
         EquazioneSecondoGradoModificabileConRisolutore e1 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, 1);
         // Controllo che l'equazione appena creata non è risolta
         assertFalse(e1.isSolved());
@@ -149,7 +143,6 @@ class EquazioneSecondoGradoModificabileConRisolutoreTest {
 
     @Test
     final void testGetSolution() {
-        // TODO implementare
         EquazioneSecondoGradoModificabileConRisolutore e4 = new EquazioneSecondoGradoModificabileConRisolutore(1, 1, 1);
         assertThrows(IllegalStateException.class, () -> e4.getSolution());
 

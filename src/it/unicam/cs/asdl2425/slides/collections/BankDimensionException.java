@@ -21,7 +21,6 @@ public class BankDimensionException extends RuntimeException {
      * 
      */
     public BankDimensionException() {
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -29,7 +28,6 @@ public class BankDimensionException extends RuntimeException {
      */
     public BankDimensionException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -37,7 +35,6 @@ public class BankDimensionException extends RuntimeException {
      */
     public BankDimensionException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -46,7 +43,6 @@ public class BankDimensionException extends RuntimeException {
      */
     public BankDimensionException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
 }
