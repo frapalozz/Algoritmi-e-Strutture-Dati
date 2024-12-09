@@ -262,7 +262,7 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         private Itr() {
 
-            // Setup numero modifiche per fail-fast
+            // Setup numero modifiche per fail-fast e ultimo nodo ritornato
             this.expectedModCount = HashLinkedList.this.numeroModifiche;
             this.lastReturnedNode = null;
         }
@@ -273,24 +273,21 @@ public class HashLinkedList<T> implements Iterable<T> {
             if (this.lastReturnedNode == null)
                 // inizio iterazione, quindi controlla se esiste la testa
                 return HashLinkedList.this.head != null;
-            else
-                // Controlla se esiste il nodo seguente
-                return this.lastReturnedNode.next != null;
+
+            // Controlla se esiste il nodo seguente
+            return this.lastReturnedNode.next != null;
         }
 
         @Override
         public T next() {
 
             // Controllo se durante l'iterazione è stata modificata la lista (fail-fast)
-            if (this.expectedModCount != HashLinkedList.this.numeroModifiche) {
-                throw new ConcurrentModificationException(
-                        "Lista modificata");
-            }
+            if (this.expectedModCount != HashLinkedList.this.numeroModifiche)
+                throw new ConcurrentModificationException("Lista modificata");
             
             // Controllo elemento successivo
             if (!hasNext())
-                throw new NoSuchElementException(
-                        "Richiesta next senza nessun elemento successivo");
+                throw new NoSuchElementException("Richiesta next senza nessun elemento successivo");
 
             // C'è sicuramente un altro elemento
             // aggiorno lastReturnedNode e restituisco l'elemento successivo
@@ -298,11 +295,12 @@ public class HashLinkedList<T> implements Iterable<T> {
                 // sono all’inizio della lista
                 this.lastReturnedNode = HashLinkedList.this.head;
                 return this.lastReturnedNode.data;
-            } else {
-                // non sono all’inizio della lista
-                this.lastReturnedNode = this.lastReturnedNode.next;
-                return this.lastReturnedNode.data;
             }
+
+            // non sono all’inizio della lista
+            this.lastReturnedNode = this.lastReturnedNode.next;
+            return this.lastReturnedNode.data;
+            
         }
     }
 }
