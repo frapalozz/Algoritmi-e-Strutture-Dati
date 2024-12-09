@@ -82,7 +82,6 @@ public class MerkleProof {
             
         // Aggiungi nodo alla lista
         this.proof.addAtTail(new MerkleProofHash(hash, isLeft));
-        
         return true;
     }
 

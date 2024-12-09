@@ -49,6 +49,7 @@ public class MerkleTree<T> {
 
         // Lista contenete i nodi di un certo livello
         List<MerkleNode> nodesLayer = new LinkedList<>();
+
         // Generazione ultimo livello, nodi foglia
         for (String hash : hashList.getAllHashes()) {
             nodesLayer.add( new MerkleNode(hash) );
@@ -163,10 +164,11 @@ public class MerkleTree<T> {
 
         // Hash di data
         String dataHash = HashUtil.dataToHash(data);
+
         // i[0] = indice di data, i[1] = indice nodo foglia da visitare
         int[] i = {-1, 0};
 
-        // trova indice di data
+        // trova indice di data dal branch
         getIndex(branch, dataHash, i);
 
         return i[0];
@@ -191,7 +193,7 @@ public class MerkleTree<T> {
         if(data == null)
             throw new IllegalArgumentException("data null!");
         
-        // Ottieni indice di data partendo da root
+        // Ottieni indice dell'hash di data nei nodi foglia se presente
         return getIndexOfData(this.root, data);
     }
 
