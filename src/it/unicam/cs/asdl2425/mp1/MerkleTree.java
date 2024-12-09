@@ -51,9 +51,8 @@ public class MerkleTree<T> {
         List<MerkleNode> nodesLayer = new LinkedList<>();
 
         // Generazione ultimo livello, nodi foglia
-        for (String hash : hashList.getAllHashes()) {
+        for (String hash : hashList.getAllHashes()) 
             nodesLayer.add( new MerkleNode(hash) );
-        }
 
         MerkleNode parentNode; // Nodo combinato dei due figli
         String parentHash; // Hash combinato dei due figli del nodo
