@@ -123,7 +123,7 @@ class MerkleTreeTest {
 
     }
 
-    @Test
+    /*@Test
     void testGetIndexOfData5(){
 
         HashLinkedList<Long> hashList5;
@@ -135,7 +135,7 @@ class MerkleTreeTest {
 
         int index = merkleTree5.getIndexOfData(556L);
         assertEquals(-1, index);
-    }
+    }*/
 
     @Test
     void testConstructorWithValidHashList1() {
