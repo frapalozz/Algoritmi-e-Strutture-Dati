@@ -56,7 +56,7 @@ public class MerkleTree<T> {
         List<MerkleNode> nodesLayer = new LinkedList<>();
 
         // Aggiunta di hash foglie
-        this.leafsHash = hashList.getAllHashes();
+        this.leafsHash = new ArrayList<>(hashList.getAllHashes());
 
         // Generazione ultimo livello, nodi foglia
         for (String hash : this.leafsHash) 

@@ -124,6 +124,20 @@ class MerkleTreeTest {
     }
 
     @Test
+    void testGetIndexOfData5(){
+
+        HashLinkedList<Long> hashList5;
+        MerkleTree<Long> merkleTree5;
+
+        hashList5 = new HashLinkedList<>();
+        for (int i = 1; i <= 3000000; i++) hashList5.addAtTail(111L*i);
+        merkleTree5 = new MerkleTree<>(hashList5);
+
+        int index = merkleTree5.getIndexOfData(556L);
+        assertEquals(-1, index);
+    }
+
+    @Test
     void testConstructorWithValidHashList1() {
         assertNotNull(merkleTree1.getRoot(),
                 "La radice dell'albero non dovrebbe essere null.");
@@ -239,20 +253,6 @@ class MerkleTreeTest {
     @Test
     void testGetIndexOfData4() {
         int index = merkleTree2.getIndexOfData(556L);
-        assertEquals(-1, index, "Un dato non presente dovrebbe restituire -1.");
-    }
-
-    @Test
-    void testGetIndexOfData5() {
-        
-        HashLinkedList<Long> hashList5;
-        MerkleTree<Long> merkleTree5;
-         
-        hashList5 = new HashLinkedList<>();
-        for (int i = 1; i <= 3000000; i++) hashList5.addAtTail(111L * i);
-        merkleTree5 = new MerkleTree<>(hashList5);
-
-        int index = merkleTree5.getIndexOfData(556L);
         assertEquals(-1, index, "Un dato non presente dovrebbe restituire -1.");
     }
 
