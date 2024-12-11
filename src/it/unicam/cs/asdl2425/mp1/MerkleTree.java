@@ -269,9 +269,6 @@ public class MerkleTree<T> {
      */
     public boolean validateBranch(MerkleNode branch) {
 
-        // Hash del nodo da validare
-        String hash = branch.getHash();
-
         // Creazione lista contenente i nodi in cui cercare partendo dal root
         List<MerkleNode> list = new LinkedList<>();
         list.add(this.root);
@@ -281,8 +278,8 @@ public class MerkleTree<T> {
             // Finchè la lista list ha qualche nodo allora bisogna controllare se un hash corrisponde a
             // quello del branch
 
-            // Branch trovato
-            if(list.get(0).getHash().equals(hash))
+            if(list.get(0).equals(branch))
+                // Branch trovato
                 return true;
 
             
@@ -359,22 +356,32 @@ public class MerkleTree<T> {
         // Set di indici non validi
         Set<Integer> invalidDataSet = new HashSet<>();
         // Trova tutti gli indici non validi ricorsivamente
-        findInvalidDataIndicesRecursive(this.root, otherTree.getRoot(), 0, this.getHeight()-1, invalidDataSet);
+        findInvalidDataIndicesRecursive(this.root, otherTree.getRoot(), 0, invalidDataSet);
 
         return invalidDataSet;
     }
 
-    /*
+    /**
      * Trova ricorsivamente gli indici degli elementi di dati non validi in un
-     * dato Merkle Tree, secondo questo Merkle Tree
+     * dato Merkle Tree, secondo questo Merkle Tree.
+     *
+     * @param node
+     *                           il nodo corrente da validare.
+     * @param otherNode
+     *                           il nodo corrispondente nell'altro albero da
+     *                           validare.
+     * @param nodesOnLeft
+     *                           il numero di nodi a sinistra del nodo corrente
+     *                           nel suo livello.
+     * @param invalidIndices
+     *                           l'insieme di indici degli elementi di dati non
+     *                           validi.
      */
-    private void findInvalidDataIndicesRecursive(MerkleNode node,
-    MerkleNode otherNode, int nodesOnLeft, int currentHeight, 
-    Set<Integer> invalidIndices) {
+    private void findInvalidDataIndicesRecursive(MerkleNode node, MerkleNode otherNode, int nodesOnLeft, Set<Integer> invalidIndices) {
 
         if(node.isLeaf()) {
             // Nodo foglia quindi controllo se non valido
-            if(!node.getHash().equals(otherNode.getHash()))
+            if(!node.equals(otherNode))
                 // Aggiunta indice a set
                 invalidIndices.add(nodesOnLeft);
 
@@ -382,16 +389,15 @@ public class MerkleTree<T> {
         }
 
         // Lato sinistro diverso
-        if(!node.getLeft().getHash().equals(otherNode.getLeft().getHash())) 
-            // Nessun aumento di nodi foglia alla sua sinistra
-            findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft, currentHeight-1, invalidIndices);
+        if(!node.getLeft().equals(otherNode.getLeft())) 
+            // Raddoppio dei nodi foglia a sinistra
+            findInvalidDataIndicesRecursive(node.getLeft(), otherNode.getLeft(), nodesOnLeft*2, invalidIndices);
 
         // Lato destro diverso
         if(node.getRight() != null){
-            if(!node.getRight().getHash().equals(otherNode.getRight().getHash()))
-                // Aumento di nodi foglia alla sua sinistra
-                // L'aumento corrisponde a 2^(altezza da nodo figlio)
-                findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesOnLeft+(int)Math.pow(2, currentHeight), currentHeight-1, invalidIndices);
+            if(!node.getRight().equals(otherNode.getRight()))
+                // Raddoppio nodi foglia a sinistra + 1
+                findInvalidDataIndicesRecursive(node.getRight(), otherNode.getRight(), nodesOnLeft*2 + 1, invalidIndices);
         }
         
     }
@@ -503,8 +509,7 @@ public class MerkleTree<T> {
      * dato nodo. Se l'hash fornito non è presente
      * nell'albero come hash di un discendente, viene restituita una lista vuota.
      */
-    public void getPathToRoot(MerkleNode currentNode,
-            String dataHash, List<MerkleNode> path) {
+    public void getPathToRoot(MerkleNode currentNode, String dataHash, List<MerkleNode> path) {
 
         // Caso base 
         if(currentNode.getHash().equals(dataHash)){
