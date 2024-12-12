@@ -203,7 +203,7 @@ public class HashLinkedList<T> implements Iterable<T> {
 
         // nodo osservato
         Node currentNode = this.head;
-        // nodo precedente a quello attualmente ossvato
+        // nodo precedente a quello attualmente osservato
         Node previousNode = null;   
 
         // Itera per trovare il nodo da eliminare
