@@ -26,11 +26,6 @@ public class MerkleTree<T> {
      */
     private final int width;
 
-    /*
-     * Lista ordinata degli hash delle foglie
-     */
-    private final List<String> leafsHash;
-
     /**
      * Costruisce un albero di Merkle a partire da un oggetto HashLinkedList,
      * utilizzando direttamente gli hash presenti nella lista per costruire le
@@ -55,11 +50,8 @@ public class MerkleTree<T> {
         // Lista contenete i nodi di un certo livello
         List<MerkleNode> nodesLayer = new LinkedList<>();
 
-        // Aggiunta di hash foglie
-        this.leafsHash = new ArrayList<>(hashList.getAllHashes());
-
         // Generazione ultimo livello, nodi foglia
-        for (String hash : this.leafsHash) 
+        for (String hash : hashList.getAllHashes()) 
             nodesLayer.add( new MerkleNode(hash) );
 
         MerkleNode parentNode; // Nodo combinato dei due figli
@@ -201,7 +193,7 @@ public class MerkleTree<T> {
             throw new IllegalArgumentException("data null!");
         
         // Ottieni indice dell'hash di data nei nodi foglia se presente
-        return this.leafsHash.indexOf(HashUtil.dataToHash(data));
+        return getIndexOfData(this.root, data);
     }
 
     /*
@@ -279,7 +271,7 @@ public class MerkleTree<T> {
             // quello del branch
 
             if(list.get(0).equals(branch))
-                // Branch trovato
+                // Branch trovato 
                 return true;
 
             
