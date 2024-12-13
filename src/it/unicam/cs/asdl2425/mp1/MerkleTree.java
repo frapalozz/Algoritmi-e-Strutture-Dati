@@ -126,7 +126,7 @@ public class MerkleTree<T> {
      */
     public int getHeight() {
 
-        // Altezza = log_2(nodi foglia), dato che è un albero bilanciato
+        // Altezza = log_2(nodi foglia)
         return (int) Math.ceil(Math.log(this.width) / Math.log(2));
     }
 
@@ -161,16 +161,8 @@ public class MerkleTree<T> {
         if(data == null)
             throw new IllegalArgumentException("data null!");
 
-        // Hash di data
-        String dataHash = HashUtil.dataToHash(data);
-
-        // i[0] = indice di data, i[1] = indice nodo foglia da visitare
-        int[] i = {-1, 0};
-
         // trova indice di data dal branch
-        getIndex(branch, dataHash, i);
-
-        return i[0];
+        return getIndex(branch, HashUtil.dataToHash(data), 0);
     }
 
     /**
@@ -192,44 +184,42 @@ public class MerkleTree<T> {
         if(data == null)
             throw new IllegalArgumentException("data null!");
         
-        // Ottieni indice dell'hash di data nei nodi foglia se presente
+        // Trova indice di data dal nodo root
         return getIndexOfData(this.root, data);
     }
 
-    /*
-     * getIndex() serve a trovare l'indice di un dato elemento
+    /**
+     * Trova l'indice di un dato elemento.
      * Ricerca ricorsivamente tra tutte le foglie, se la foglia controllata non corrisponde al dato
-     * allora viene incrementato l'indice. Se la foglia corrisponde al dato, allora viene impostato l'indice
+     * allora viene incrementato l'indice. Se la foglia corrisponde al dato, allora viene salvato l'indice
+     * 
+     * @param node
+     *              Nodo in cui si sta cercando, root dell'albero in cui cercare
+     * @param dataHash
+     *              Hash da cercare nei nodi foglia
+     * @param nodesOnLeft
+     *              Nodi alla sinistra del nodo node nel livello attuale
+     * 
+     * @return l'indice del dato nell'albero; -1 se il dato non è presente.
      */
-    private void getIndex(MerkleNode node, String data, int[] i){
-
-        // Caso base
-        if(i[0] == i[1])
-            // è stato trovato l'indice
-            return;
-        if(node.isLeaf()){
-            // Il seguente nodo è una foglia
-
-            if(data.equals(node.getHash())) {
-                // L'hash corrisponde a quello di data, quindi salvo il suo indice
-                i[0] = i[1];
-            }
-            else {
-                // La seguente foglia non ha lo stesso hash di data, quindi incremento indice
-                i[1]++;
-            }
-                
-            return;
-        }
+    private int getIndex(MerkleNode node, String dataHash, int nodesOnLeft){
+        // Casi base
+        if(node == null)
+            return -1;
+        if(node.isLeaf() && node.getHash().equals(dataHash)) 
+            // Nodo trovato
+            return nodesOnLeft;
+        
 
         // Caso ricorsivo
-        // Non è ancora stato trovato la foglia con hash data
-        // Cerco nei nodi a sinistra
-        getIndex(node.getLeft(), data, i);
+        // Cerca indice di dataHash nel sotto albero sinistro
+        int index = getIndex(node.getLeft(), dataHash, nodesOnLeft*2);
+        if(index > -1)
+            // L'hash cercato si trova nel sotto albero sinistro, quindi ritorna il suo indice
+            return index;
 
-        // Cerco nei nodi a destra
-        if(node.getRight() != null)
-            getIndex(node.getRight(), data, i);
+        // Cerca indice di dataHash nel sotto albero destro
+        return getIndex(node.getRight(), dataHash, nodesOnLeft*2+1);
     }
 
     /**
@@ -260,6 +250,8 @@ public class MerkleTree<T> {
      * @return true se il sottoalbero di Merkle è valido; false altrimenti.
      */
     public boolean validateBranch(MerkleNode branch) {
+        if(branch == null)
+            return false;
 
         // Creazione lista contenente i nodi in cui cercare partendo dal root
         List<MerkleNode> list = new LinkedList<>();
@@ -463,8 +455,16 @@ public class MerkleTree<T> {
         return merkleProofGenerator(path, path.size()-1);
     }
 
-    /*
+    /**
      * Genera la prova di Merkle per un dato nodo
+     * 
+     * @param path
+     *              Lista della path dal nodo per cui bisogna fare la MerkleProof
+     *              fino al root
+     * @param size
+     *              Dimensione della MerkleProof
+     * 
+     * @return MerkleProof per il nodo iniziale della lista path
      */
     private MerkleProof merkleProofGenerator(List<MerkleNode> path, int size) {
 
@@ -496,10 +496,17 @@ public class MerkleTree<T> {
         return merkleProof;
     }
 
-    /*
+    /**
      * Metodo ricorsivo che restituisce il cammino da un dato nodo con il dato hash al
      * dato nodo. Se l'hash fornito non è presente
      * nell'albero come hash di un discendente, viene restituita una lista vuota.
+     * 
+     * @param currentNode
+     *                  Il nodo corrente da cui iniziare la ricerca
+     * @param dataHash
+     *                  L'hash del dato da cercare
+     * @param path
+     *                  La lista dal nodo che contiene dataHash fino al root
      */
     public void getPathToRoot(MerkleNode currentNode, String dataHash, List<MerkleNode> path) {
 
