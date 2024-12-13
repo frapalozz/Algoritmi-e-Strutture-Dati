@@ -1,7 +1,6 @@
 package it.unicam.cs.asdl2425.es10;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -55,12 +54,13 @@ public class MaxHeap<E extends Comparable<E>> {
      *                                  se la lista è nulla
      */
     public MaxHeap(List<E> list) {
-        // TODO implementare
         if(list == null)
             throw new NullPointerException("list null!");
 
-        // Creazione Max-Heap
+        // Creazione Heap
         heap = new ArrayList<>(list);
+
+        // Ordina Max-Heap
         for(int i = heap.size()/2-1; i >= 0; i--){
             heapify(i);
         }
@@ -76,14 +76,15 @@ public class MaxHeap<E extends Comparable<E>> {
      * 
      */
     public void insert(E el) {
-        // TODO implementare
         if(el == null)
             throw new NullPointerException("el null!");
 
+        // prendi indice dell'elemento inserito
         int i = heap.size();
         heap.add(el);
 
         while(i > 0 && heap.get(parentIndex(i)).compareTo(heap.get(i)) < 0){
+            // Finchè l'elemento inserito è più grande di suo padre, scambiali
             scambia(i, parentIndex(i));
             i = parentIndex(i);
         }
@@ -95,7 +96,6 @@ public class MaxHeap<E extends Comparable<E>> {
      * la radice dello heap.
      */
     private int leftIndex(int i) {
-        // TODO implementare
         return i*2 + 1;
     }
 
@@ -105,7 +105,6 @@ public class MaxHeap<E extends Comparable<E>> {
      * la radice dello heap.
      */
     private int rightIndex(int i) {
-        // TODO implementare
         return i*2 + 2;
     }
 
@@ -115,7 +114,6 @@ public class MaxHeap<E extends Comparable<E>> {
      * la radice dello heap.
      */
     private int parentIndex(int i) {
-        // TODO implementare
         return (i-1)/2;
     }
 
@@ -125,10 +123,9 @@ public class MaxHeap<E extends Comparable<E>> {
      * @return l'elemento massimo dello heap oppure null se lo heap è vuoto
      */
     public E getMax() {
-        // TODO implementare
         if(heap.size() == 0)
             return null;
-            
+
         return heap.get(0);
     }
 
@@ -139,7 +136,6 @@ public class MaxHeap<E extends Comparable<E>> {
      * @return l'elemento massimo di questo heap oppure null se lo heap è vuoto
      */
     public E extractMax() {
-        // TODO implementare
         if(heap.size() == 0)
             return null;
 
@@ -147,9 +143,12 @@ public class MaxHeap<E extends Comparable<E>> {
             return heap.remove(0);
         
 
+        // Sposta l'elemento più grande nell'ultima posizione
         scambia(0, heap.size()-1);
+        // Estrai l'ultimo elemento
         E max = heap.remove(heap.size()-1);
 
+        // Riordina l'heap
         heapify(0);
 
         return max;
@@ -160,20 +159,23 @@ public class MaxHeap<E extends Comparable<E>> {
      * suoi sottoalberi sinistro e destro (se esistono) siano heap.
      */
     private void heapify(int i) {
-        // TODO implementare
         int left = leftIndex(i);
         int right = rightIndex(i);
         int massimo;
 
         if(left < heap.size() && heap.get(left).compareTo(heap.get(i)) > 0)
+            // Se il figlio sinistro è più grande di suo padre, allora salva il suo indice in massimo
             massimo = left;
         else
+            // Altrimenti salva l'indice del padre
             massimo = i;
 
         if(right < heap.size() && heap.get(right).compareTo(heap.get(massimo)) > 0)
+            // Se il figlio destro del padre è più grande del massimo, allora salva l'indice del figlio destro
             massimo = right;
 
         if(massimo != i){
+            // Se il massimo non è il padre, allora scambia il padre con il massimo e richiama heapify sull'indice del massimo
             scambia(i, massimo);
             heapify(massimo);
         }
