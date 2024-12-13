@@ -3,10 +3,7 @@
  */
 package it.unicam.cs.asdl2425.es10;
 
-import java.util.ArrayList;
 import java.util.List;
-
-// TODO completare import 
 
 /**
  * Classe che implementa un algoritmo di ordinamento basato su heap.
@@ -18,11 +15,6 @@ public class HeapSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
 
     @Override
     public SortingAlgorithmResult<E> sort(List<E> l) {
-        // TODO implementare - Nota: usare una variante dei metodi della classe
-        // MaxHeap in modo da implementare l'algoritmo utilizzando solo un array
-        // (arraylist) e alcune variabili locali di appoggio (implementazione
-        // cosiddetta "in loco" o "in place", si veda
-        // https://it.wikipedia.org/wiki/Algoritmo_in_loco)
 
         int heapSize = l.size()-1;
         int countCompare = 0;
@@ -30,7 +22,7 @@ public class HeapSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
         // Crea Max-Heap
         countCompare += buildMaxHeap(l);
         
-        // HeapSort
+        // Ordinamento
         for(int i = heapSize; i > 0; i--){
             scambia(0, i, l);
             countCompare += heapify(0, heapSize--, l);
@@ -51,8 +43,8 @@ public class HeapSort<E extends Comparable<E>> implements SortingAlgorithm<E> {
     }
 
     private int heapify(int i, int end, List<E> l) {
-        int left = i*2+1;
-        int right = i*2+2;
+        int left = i*2+1; // Figlio sinistro
+        int right = i*2+2;// Figlio destro
         int massimo, countCompare = 0;
 
         if(left < end && l.get(left).compareTo(l.get(i)) > 0)
