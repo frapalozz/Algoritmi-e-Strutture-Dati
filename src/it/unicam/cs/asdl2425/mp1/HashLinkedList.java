@@ -86,6 +86,8 @@ public class HashLinkedList<T> implements Iterable<T> {
      *                 il dato da aggiungere.
      */
     public void addAtHead(T data) {
+        if(data == null)
+            throw new IllegalArgumentException("data null in addAtHead()!");
 
         // Creazione nodo da aggiungere
         Node newNode = new Node(data);
@@ -113,6 +115,8 @@ public class HashLinkedList<T> implements Iterable<T> {
      *                 il dato da aggiungere.
      */
     public void addAtTail(T data) {
+        if(data == null)
+            throw new IllegalArgumentException("data null in addAtTail()!");
 
         // Creazione nodo da aggiungere
         Node newNode = new Node(data);
@@ -200,6 +204,8 @@ public class HashLinkedList<T> implements Iterable<T> {
      * @return true se l'elemento è stato trovato e rimosso, false altrimenti.
      */
     public boolean remove(T data) {
+        if(data == null)
+            throw new IllegalArgumentException("data null in remove()!");
 
         // nodo osservato
         Node currentNode = this.head;
