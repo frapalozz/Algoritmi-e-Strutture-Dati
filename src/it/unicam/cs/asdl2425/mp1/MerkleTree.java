@@ -43,9 +43,9 @@ public class MerkleTree<T> {
     public MerkleTree(HashLinkedList<T> hashList) {
         
         if(hashList == null)
-            throw new IllegalArgumentException("hashList null!");
+            throw new IllegalArgumentException("hashList passato al costruttore è null!");
         if(hashList.getSize() == 0)
-            throw new IllegalArgumentException("hashList vuota!");
+            throw new IllegalArgumentException("hashList passato al costruttore è vuota!");
 
         // Lista contenete i nodi di un certo livello
         List<MerkleNode> nodesLayer = new LinkedList<>();
@@ -155,11 +155,11 @@ public class MerkleTree<T> {
     public int getIndexOfData(MerkleNode branch, T data) {
         
         if(branch == null)
-            throw new IllegalArgumentException("branch null!");
+            throw new IllegalArgumentException("branch passato a getIndexOfData() è null!");
         if(!(validateBranch(branch)))
-            throw new IllegalArgumentException("branch non è parte dell'albero!");
+            throw new IllegalArgumentException("branch passato a getIndexOfData() non è parte dell'albero!");
         if(data == null)
-            throw new IllegalArgumentException("data null!");
+            throw new IllegalArgumentException("data passato a getIndexOfData() è null!");
 
         // trova indice di data dal branch
         return getIndex(branch, HashUtil.dataToHash(data), 0);
@@ -182,7 +182,7 @@ public class MerkleTree<T> {
     public int getIndexOfData(T data) {
         
         if(data == null)
-            throw new IllegalArgumentException("data null!");
+            throw new IllegalArgumentException("data passato a getIndexOfData() è null!");
         
         // Trova indice di data dal nodo root
         return getIndexOfData(this.root, data);
@@ -303,7 +303,7 @@ public class MerkleTree<T> {
     public boolean validateTree(MerkleTree<T> otherTree) {
         
         if(otherTree == null)
-            throw new IllegalArgumentException("otherTree null!");
+            throw new IllegalArgumentException("otherTree passato a validateTree è null!");
 
         // Se questo albero e quello passato hanno lo stesso hash allora
         // significa che l'albero passato è valido
@@ -333,9 +333,9 @@ public class MerkleTree<T> {
     public Set<Integer> findInvalidDataIndices(MerkleTree<T> otherTree) {
         
         if(otherTree == null)
-            throw new IllegalArgumentException("otherTree null!");
+            throw new IllegalArgumentException("otherTree passato a findInvalidDataIndices è null!");
         if(this.width != otherTree.getWidth())
-            throw new IllegalArgumentException("struttura di otherTree diversa diversa rispetto albero corrente!");
+            throw new IllegalArgumentException("La struttura di otherTree non corrisponde alla struttura di questo albero");
 
         // Set di indici non validi
         Set<Integer> invalidDataSet = new HashSet<>();
@@ -407,9 +407,9 @@ public class MerkleTree<T> {
     public MerkleProof getMerkleProof(T data) {
         
         if(data == null)
-            throw new IllegalArgumentException("data null!");
+            throw new IllegalArgumentException("data passato a getMerkleProof è null!");
         if(!this.validateData(data))
-            throw new IllegalArgumentException("data non è parte dell'albero!");
+            throw new IllegalArgumentException("data passato a getMerkleProof non è parte dell'albero!");
 
         // Lista dei nodi. [Foglia -> ... -> Root]
         List<MerkleNode> path = new ArrayList<>();
@@ -442,9 +442,9 @@ public class MerkleTree<T> {
     public MerkleProof getMerkleProof(MerkleNode branch) {
         
         if(branch == null)
-            throw new IllegalArgumentException("branch null!");
+            throw new IllegalArgumentException("branch passato a getMerkleProof null!");
         if(!this.validateBranch(branch))
-            throw new IllegalArgumentException("branch non è parte dell'albero!");
+            throw new IllegalArgumentException("branch passato a getMerkleProof non è parte dell'albero!");
         
         // Lista dei nodi. [Branch -> ... -> Root]
         List<MerkleNode> path = new ArrayList<>();
@@ -516,7 +516,7 @@ public class MerkleTree<T> {
             path.add(currentNode);
             return;
         }
-        if(currentNode.isLeaf())
+        else if(currentNode.isLeaf() || currentNode == null)
             return;
             
 
