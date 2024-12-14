@@ -154,12 +154,10 @@ public class MerkleProof {
 
         @Override
         public int hashCode() {
-
-            final int prime = 31;
-            int result = 1;
+            
             long temp = this.toString().hashCode();
 
-            return  prime * result + (int) (temp ^ (temp >>> 32));
+            return  31 + (int) (temp ^ (temp >>> 32));
         }
     }
 
