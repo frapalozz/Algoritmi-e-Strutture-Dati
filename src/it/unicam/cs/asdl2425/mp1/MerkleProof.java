@@ -179,7 +179,7 @@ public class MerkleProof {
     public boolean proveValidityOfData(Object data) {
         
         if(data == null)
-            throw new IllegalArgumentException("data null in proveValidityOfData()!");
+            throw new IllegalArgumentException("data passato in proveValidityOfData() è null!");
         
         // Controlla se il rootHash è uguale all'hash calcolato
         return computeHash(HashUtil.dataToHash(data)).equals(this.rootHash);
@@ -201,7 +201,7 @@ public class MerkleProof {
     public boolean proveValidityOfBranch(MerkleNode branch) {
         
         if(branch == null)
-            throw new IllegalArgumentException("branch null in proveValidityOfBranch()!");
+            throw new IllegalArgumentException("branch passato in proveValidityOfBranch() è null!");
 
         // Controlla se il rootHash è uguale all'hash calcolato
         return computeHash(branch.getHash()).equals(this.rootHash);
