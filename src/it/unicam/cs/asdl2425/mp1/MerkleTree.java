@@ -250,9 +250,7 @@ public class MerkleTree<T> {
      * @return true se il sottoalbero di Merkle è valido; false altrimenti.
      */
     public boolean validateBranch(MerkleNode branch) {
-        if(branch == null)
-            return false;
-
+        
         // Creazione lista contenente i nodi in cui cercare partendo dal root
         List<MerkleNode> list = new LinkedList<>();
         list.add(this.root);
