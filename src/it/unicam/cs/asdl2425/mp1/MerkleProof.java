@@ -179,7 +179,7 @@ public class MerkleProof {
         if(data == null)
             throw new IllegalArgumentException("data passato in proveValidityOfData() è null!");
         
-        // Controlla se il rootHash è uguale all'hash calcolato
+        // Controlla se l'hash calcolato è uguale al rootHash
         return computeHash(HashUtil.dataToHash(data)).equals(this.rootHash);
     }
 
@@ -201,15 +201,20 @@ public class MerkleProof {
         if(branch == null)
             throw new IllegalArgumentException("branch passato in proveValidityOfBranch() è null!");
 
-        // Controlla se il rootHash è uguale all'hash calcolato
+        // Controlla se l'hash calcolato è uguale al rootHash
         return computeHash(branch.getHash()).equals(this.rootHash);
     }
 
-    /*
+    /**
      * Calcola l'hash combinato dato un valore hash iniziale.
      * Il calcolo viene eseguito combinando l'hash passato con l'hash del primo oggetto MerkleProofHash nel proof
      * in un nuovo hash, il risultato con il successivo e così via fino
      * all'ultimo oggetto.
+     * 
+     * @param hash
+     *              hash del merkleNode per cui fare la prova
+     * 
+     * @return l'hash stringa calcolato attraverso la combinazione degli hash
      */
     private String computeHash(String hash){
         // Stringa hash calcolata

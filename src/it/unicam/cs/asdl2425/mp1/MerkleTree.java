@@ -514,7 +514,7 @@ public class MerkleTree<T> {
             path.add(currentNode);
             return;
         }
-        else if(currentNode.isLeaf() || currentNode == null)
+        else if(currentNode.isLeaf())
             return;
             
 
