@@ -3,7 +3,7 @@ package it.unicam.cs.asdl2425.es10;
 import java.util.List;
 
 /**
- * Un sover prende una certa sequenza di matrici da moltiplicare e calcola una
+ * Un solver prende una certa sequenza di matrici da moltiplicare e calcola una
  * parentesizzazione ottima, cioè che minimizza il numero di moltiplicazioni
  * scalari necessarie per moltiplicare tutte le matrici.
  * 
@@ -58,7 +58,30 @@ public class MatrixMultiplicationSolver {
      * dinamica.
      */
     private void solve() {
-        // TODO implementare
+        int n = p.size()-1;
+
+        for(int i = 0; i < n; i++)
+            m[i][i] = 0; // Generazione costi minimi
+
+
+        for(int l = 2; l <= n; l++){
+            // Iterazione per livelli successivi
+            for(int i = 0; i < n-l+1; i++){
+                // riga e colonna del livello successivo
+                int j = i+l-1;
+                m[i][j] = Integer.MAX_VALUE;
+
+                for(int k = i; k < j; k++){
+                    // Calcolo costo di quel livello
+                    int q = m[i][k] + m[k+1][j] + p.get(i)*p.get(k+1)*p.get(j+1);
+                    if(q < m[i][j]){
+                        // Aggiunta costo livello e valore k per parantesizzazione ottima
+                        m[i][j] = q;
+                        b[i][j] = k;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -94,8 +117,13 @@ public class MatrixMultiplicationSolver {
      * appositamente durante il processo di calcolo del costo minimo
      */
     private String traceBack(int i, int j) {
-        // TODO implementare ricorsivamente
-        return null;
+
+        if(i == j)
+            // Caso base
+            return "A_{"+i+"}";
+    
+        // Caso ricorsivo
+        return "(" + traceBack(i, b[i][j]) + " x " + traceBack(b[i][j]+1, j) + ")";
     }
 
 }
